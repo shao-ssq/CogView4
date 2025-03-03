@@ -14,9 +14,15 @@
 
 ## Project Updates
 
-- 🔥🔥 ```2025/03/04```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version of **CogView-4** model, which has 6B parameters, supports native Chinese input, and Chinese text-to-image generation. You can try it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4-6B-Space).
-- ```2024/10/13```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version of **CogView-3Plus-3B** model. You can try it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space).
-- ```2024/9/29```: We've open-sourced **CogView3** and **CogView-3Plus-3B**. **CogView3** is a text-to-image system based on cascading diffusion, using a relay diffusion framework. **CogView-3Plus** is a series of newly developed text-to-image models based on Diffusion Transformer.
+- 🔥🔥 ```2025/03/04```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version
+  of **CogView-4** model, which has 6B parameters, supports native Chinese input, and Chinese text-to-image generation.
+  You can try it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4-6B-Space).
+- ```2024/10/13```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version of
+  **CogView-3Plus-3B** model. You can try
+  it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space).
+- ```2024/9/29```: We've open-sourced **CogView3** and **CogView-3Plus-3B**. **CogView3** is a text-to-image system
+  based on cascading diffusion, using a relay diffusion framework. **CogView-3Plus** is a series of newly developed
+  text-to-image models based on Diffusion Transformer.
 
 ## Project Plan
 
@@ -24,6 +30,7 @@
 - [ ] ComfyUI diffusers nodes
 - [ ] Fine-tuning scripts and ecosystem kits
 - [ ] ControlNet model release
+- - [ ] Cog series fine-tuning kit
 
 ## Model Introduction
 
@@ -70,13 +77,13 @@
 
 DIT models are tested with `BF16` precision and `batchsize=4`, with results shown in the table below:
 
-| Resolution   | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit |
-|--------------|------------------------------|-----------------------------|----------------------------------------------------|
-| 512 * 512    | 33GB                         | 20GB                        | 13G                                                |
-| 1280 * 720   | 35GB                         | 20GB                        | 13G                                                |
-| 1024 * 1024  | 35GB                         | 20GB                        | 13G                                                |
-| 1920 * 1280  | 39GB                         | 20GB                        | 14G                                                |
-| 2048 * 2048  | 43GB                         | 21GB                        | 14G                                                |
+| Resolution  | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit |
+|-------------|------------------------------|-----------------------------|-----------------------------------------------------|
+| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 |
+| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 |
+| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 |
+| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 |
+| 2048 * 2048 | 43GB                         | 21GB                        | 14G                                                 |
 
 Additionally, we recommend that your device has at least `32GB` of RAM to prevent the process from being killed.
 
@@ -86,54 +93,54 @@ We've tested on multiple benchmarks and achieved the following scores:
 
 #### dpg_bench
 
-| model | overall | global | entity | attribute | relation | other |
-|-------|---------|--------|--------|-----------|----------|-------|
-| sdxl | 74.65 | 83.27 | 82.43 | 80.91 | 86.76 | 80.41 |
-| pixart-alpha | 71.11 | 74.97 | 79.32 | 78.60 | 82.57 | 76.96 |
-| sd3-medium | 84.08 | 87.90 | **91.01** | 88.83 | 80.70 | 88.68 |
-| dalle-3 | 83.50 | **90.97** | 89.61 | 88.39 | 90.58 | 89.83 |
-| flux.1-dev | 83.79 | 85.80 | 86.79 | 89.98 | 90.04 | **89.90** |
-| **cogview4** | **85.13** | 83.85 | 90.35 | **91.17** | **91.14** | 87.29 |
-
+| model        | overall   | global    | entity    | attribute | relation  | other     |
+|--------------|-----------|-----------|-----------|-----------|-----------|-----------|
+| sdxl         | 74.65     | 83.27     | 82.43     | 80.91     | 86.76     | 80.41     |
+| pixart-alpha | 71.11     | 74.97     | 79.32     | 78.60     | 82.57     | 76.96     |
+| sd3-medium   | 84.08     | 87.90     | **91.01** | 88.83     | 80.70     | 88.68     |
+| dalle-3      | 83.50     | **90.97** | 89.61     | 88.39     | 90.58     | 89.83     |
+| flux.1-dev   | 83.79     | 85.80     | 86.79     | 89.98     | 90.04     | **89.90** |
+| **cogview4** | **85.13** | 83.85     | 90.35     | **91.17** | **91.14** | 87.29     |
 
 #### Geneval
 
-| model | overall | single | two | counting | colors | position | Color attribution |
-|-------|---------|--------|-----|----------|--------|----------|------------------|
-| sdxl | 0.55 | 0.98 | 0.74 | 0.39 | 0.85 | 0.15 | 0.23 |
-| pixart-alpha | 0.48 | 0.98 | 0.50 | 0.44 | 0.80 | 0.08 | 0.07 |
-| sd3-meidum | **0.74** | **0.99** | **0.94** | **0.72** | **0.89** | 0.33 | **0.60** |
-| dall-e 3 | 0.67 | 0.96 | 0.87 | 0.47 | 0.83 | 0.43 | 0.45 |
-| flux.1-dev | 0.66 | 0.98 | 0.79 | 0.73 | 0.77 | 0.22 | 0.45 |
-| **cogview4** | 0.73 | **0.99** | 0.86 | 0.66 | 0.79 | **0.48** | 0.58 |
+| model        | overall  | single   | two      | counting | colors   | position | Color attribution |
+|--------------|----------|----------|----------|----------|----------|----------|-------------------|
+| sdxl         | 0.55     | 0.98     | 0.74     | 0.39     | 0.85     | 0.15     | 0.23              |
+| pixart-alpha | 0.48     | 0.98     | 0.50     | 0.44     | 0.80     | 0.08     | 0.07              |
+| sd3-meidum   | **0.74** | **0.99** | **0.94** | **0.72** | **0.89** | 0.33     | **0.60**          |
+| dall-e 3     | 0.67     | 0.96     | 0.87     | 0.47     | 0.83     | 0.43     | 0.45              |
+| flux.1-dev   | 0.66     | 0.98     | 0.79     | 0.73     | 0.77     | 0.22     | 0.45              |
+| **cogview4** | 0.73     | **0.99** | 0.86     | 0.66     | 0.79     | **0.48** | 0.58              |
 
 #### t2i_compbench
 
-| model | color | shape | texture | 2d-spatial | 3d-spatial | numeracy | Non-spatial clip | complex 3-in-1 |
-|-------|-------|-------|---------|------------|------------|----------|-----------------|---------------|
-| sdxl | 0.5879 | 0.4687 | 0.5299 | 0.2133 | 0.3566 | 0.4988 | 0.3119 | 0.3237 |
-| pixart-alpha | 0.6690 | 0.4927 | 0.6477 | 0.2064 | 0.3901 | 0.5058 | **0.3197** | 0.3433 |
-| sd3-medium | **0.8132** | 0.5885 | **0.7334** | **0.3200** | **0.4084** | 0.6174 | 0.3140 | 0.3771 |
-| dall-e 3 | 0.7785 | **0.6205** | 0.7036 | 0.2865 | 0.3744 | 0.5880 | 0.3003 | **0.3773** |
-| flux.1-dev | 0.7572 | 0.5066 | 0.6300 | 0.2700 | 0.3992 | 0.6165 | 0.3065 | 0.3628 |
-| **cogview4** | 0.7786 | 0.5880 | 0.6983 | 0.3075 | 0.3708 | **0.6626** | 0.3056 | 0.3869 |
-
+| model        | color      | shape      | texture    | 2d-spatial | 3d-spatial | numeracy   | Non-spatial clip | complex 3-in-1 |
+|--------------|------------|------------|------------|------------|------------|------------|------------------|----------------|
+| sdxl         | 0.5879     | 0.4687     | 0.5299     | 0.2133     | 0.3566     | 0.4988     | 0.3119           | 0.3237         |
+| pixart-alpha | 0.6690     | 0.4927     | 0.6477     | 0.2064     | 0.3901     | 0.5058     | **0.3197**       | 0.3433         |
+| sd3-medium   | **0.8132** | 0.5885     | **0.7334** | **0.3200** | **0.4084** | 0.6174     | 0.3140           | 0.3771         |
+| dall-e 3     | 0.7785     | **0.6205** | 0.7036     | 0.2865     | 0.3744     | 0.5880     | 0.3003           | **0.3773**     |
+| flux.1-dev   | 0.7572     | 0.5066     | 0.6300     | 0.2700     | 0.3992     | 0.6165     | 0.3065           | 0.3628         |
+| **cogview4** | 0.7786     | 0.5880     | 0.6983     | 0.3075     | 0.3708     | **0.6626** | 0.3056           | 0.3869         |
 
 ## Chinese Text Accuracy Evaluation
 
-| model | Precision | Recall | F1 Score | pick@4 |
-|-------|-----------|--------|----------|--------|
-| kolors | 0.6094 | 0.1886 | 0.2880 | 0.1633 |
+| model        | Precision  | Recall     | F1 Score   | pick@4     |
+|--------------|------------|------------|------------|------------|
+| kolors       | 0.6094     | 0.1886     | 0.2880     | 0.1633     |
 | **cogview4** | **0.6969** | **0.5532** | **0.6168** | **0.3265** |
-
 
 ## Inference Model
 
 ### Prompt Optimization
 
-Although CogView4 series models are trained with lengthy synthetic image descriptions, we strongly recommend using a large language model to rewrite prompts before text-to-image generation, which will greatly improve generation quality.
+Although CogView4 series models are trained with lengthy synthetic image descriptions, we strongly recommend using a
+large language model to rewrite prompts before text-to-image generation, which will greatly improve generation quality.
 
-We provide an [example script](inference/prompt_optimize.py). We recommend running this script to refine your prompts. Note that `CogView4` and `CogView3` models use different few-shot examples for prompt optimization. They need to be distinguished.
+We provide an [example script](inference/prompt_optimize.py). We recommend running this script to refine your prompts.
+Note that `CogView4` and `CogView3` models use different few-shot examples for prompt optimization. They need to be
+distinguished.
 
 ```shell
 cd inference
@@ -170,11 +177,13 @@ image.save("cogview4.png")
 
 For more inference code, please check:
 
-1. For using `int4` to load `text encoder` and complete inference code annotations, check [here](inference/cli_demo_cogview4.py).
+1. For using `int4` to load `text encoder` and complete inference code annotations,
+   check [here](inference/cli_demo_cogview4.py).
 2. For setting up a `gradio` GUI DEMO, check [here](inference/gradio_web_demo.py)
 
 ## License
 
 The code in this repository and the CogView3 models are licensed under [Apache 2.0](./LICENSE).
 
-We welcome and appreciate your code contributions. You can view the contribution guidelines [here](resources/contribute.md).
+We welcome and appreciate your code contributions. You can view the contribution
+guidelines [here](resources/contribute.md).
