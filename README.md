@@ -30,7 +30,7 @@
 - [ ] ComfyUI diffusers nodes
 - [ ] Fine-tuning scripts and ecosystem kits
 - [ ] ControlNet model release
-- - [ ] Cog series fine-tuning kit
+- [ ] Cog series fine-tuning kit
 
 ## Model Introduction
 
