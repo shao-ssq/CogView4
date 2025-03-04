@@ -19,14 +19,13 @@ from datetime import datetime, timedelta
 
 import gradio as gr
 import random
-import spaces
 from diffusers import CogView4Pipeline
 import torch
 from openai import OpenAI
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-pipe = CogView4Pipeline.from_pretrained("/share/zyx/CogView4-6B-0228", torch_dtype=torch.bfloat16).to(device)
+pipe = CogView4Pipeline.from_pretrained("THUDM/CogView4-6B", torch_dtype=torch.bfloat16).to(device)
 pipe.vae.enable_slicing()
 pipe.vae.enable_tiling()
 
@@ -125,8 +124,6 @@ def delete_old_files():
 
 threading.Thread(target=delete_old_files, daemon=True).start()
 
-
-@spaces.GPU(duration=120)  # [uncomment to use ZeroGPU]
 def infer(
     prompt,
     seed,
@@ -274,4 +271,4 @@ with gr.Blocks() as demo:
         outputs=[result, seed],
     )
 
-demo.queue().launch(server_name="10.250.128.11")
+demo.queue().launch()
