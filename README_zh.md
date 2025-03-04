@@ -1,124 +1,157 @@
-# CogView3 & CogView-3Plus
+# CogView4 & CogView3 & CogView-3Plus
 
-[Read this in English](./README_zh.md)
+[Read this in English](./README.md)
 
 <div align="center">
 <img src=resources/logo.svg width="50%"/>
 </div>
 <p align="center">
-在 <a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space" target="_blank"> 🤗 Huggingface Space</a> 在线体验 CogView3-Plus-3B 模型
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space" target="_blank"> 🤗 HuggingFace Space</a>  <a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a>  <a href="resources/WECHAT.md" target="_blank"> 👋 微信社群</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 论文</a> 
 </p>
-<p align="center">
-📚 查看 <a href="https://arxiv.org/abs/2403.05121" target="_blank">论文</a>
-</p>
-<p align="center">
-    👋 加入我们的 <a href="resources/WECHAT.md" target="_blank">微信</a>
-</p>
-<p align="center">
-📍 前往<a href="https://chatglm.cn/main/gdetail/65a232c082ff90a2ad2f15e2?fr=osm_cogvideox&lang=zh"> 清言 </a> 和 <a href="https://open.bigmodel.cn/?utm_campaign=open&_channel_track_key=OWTVNma9"> API平台</a> 体验更大规模的商业版视频生成模型。
-</p>
+
+
+![showcase.png](resources/showcase.png)
 
 ## 项目更新
 
-- 🔥🔥 ```2024/10/13```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-3Plus-3B**
+- 🔥🔥 ```2025/03/04```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-4**
+  模型，该模型具有6B权重，支持原生中文输入，支持中文文字绘画。你可以前往[在线体验](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4-6B-Space)。
+- ```2024/10/13```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-3Plus-3B**
   模型。你可以前往[在线体验](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space)。
-- 🔥 ```2024/9/29```: 我们已经开源了 **CogView3**  以及 **CogView-3Plus-3B** 。**CogView3** 是一个基于级联扩散的文本生成图像系统，采用了接力扩散框架。
+- ```2024/9/29```: 我们已经开源了 **CogView3**  以及 **CogView-3Plus-3B** 。**CogView3** 是一个基于级联扩散的文本生成图像系统，采用了接力扩散框架。
   **CogView-3Plus** 是一系列新开发的基 Diffusion Transformer 的文本生成图像模型。
+
+## 项目计划
+
+- [X] diffusers 工作流适配
+- [ ] ComfyUI diffusers节点
+- [ ] 微调脚本和生态套件
+- [ ] ControlNet模型发布
+- [ ] Cog系列微调套件 
 
 ## 模型介绍
 
-CogView-3-Plus 在 CogView3（ECCV'24） 的基础上引入了最新的 DiT 框架，以实现整体性能的进一步提升。CogView-3-Plus 采用了
-Zero-SNR
-扩散噪声调度，并引入了文本-图像联合注意力机制。与常用的 MMDiT 结构相比，它在保持模型基本能力的同时，有效降低了训练和推理成本。CogView-3Plus
-使用潜在维度为 16 的 VAE。
-
-下表显示了我们目前提供的文本生成图像模型列表及其基础信息。
+### 模型对比
 
 <table style="border-collapse: collapse; width: 100%;">
   <tr>
     <th style="text-align: center;">模型名称</th>
-    <th style="text-align: center;">CogView3-Base-3B</th>
-    <th style="text-align: center;">CogView3-Base-3B-distill</th>
+    <th style="text-align: center;">CogView4</th>
     <th style="text-align: center;">CogView3-Plus-3B</th>
   </tr>
-  <tr>
-    <td style="text-align: center;">模型描述</td>
-    <td style="text-align: center;">CogView3 的基础阶段和接力阶段模型，支持 512x512 文本生成图像以及 2x 超分辨率生成。</td>
-    <td style="text-align: center;">CogView3 的蒸馏版本，分别在两个阶段采样 4 和 1 步（或 8 和 2 步）。</td>
-    <td style="text-align: center;">DIT 版本的图像生成模型 ，支持从 512 到 2048 范围内的图像生成。</td>
-  <tr>
     <td style="text-align: center;">分辨率</td>
-    <td colspan="2" style="text-align: center;">512 * 512</td>
-    <td style="text-align: center;">
+    <td colspan="2" style="text-align: center;">
             512 <= H, W <= 2048 <br>
             H * W <= 2^{21} <br>
             H, W \mod 32 = 0
     </td>
   <tr>
     <td style="text-align: center;">推理精度</td>
-    <td colspan="2" style="text-align: center;"><b>FP16(推荐)</b>, BF16, FP32</td>
-   <td style="text-align: center;"><b>BF16*(推荐)</b>, FP16, FP32</td>
-  </tr>
+    <td colspan="2" style="text-align: center;">仅支持BF16, FP32</td>
   <tr>
-    <td style="text-align: center;"> 显存占用 (bs = 4)</td>
-    <td style="text-align: center;"> 17G </td>
-    <td style="text-align: center;"> 64G </td>
-    <td style="text-align: center;"> 30G(2048 * 2048) <br> 20G(1024 * 1024) </td>
-  </tr>
+  <td style="text-align: center;">编码器</td>
+  <td style="text-align: center;"><a href="https://huggingface.co/THUDM/glm-4-9b-hf" target="_blank">GLM-4-9B</a></td>
+  <td style="text-align: center;"><a href="https://huggingface.co/google/t5-v1_1-xxl" target="_blank">T5-XXL</a></td>
+</tr>
   <tr>
     <td style="text-align: center;">提示词语言</td>
-    <td colspan="3" style="text-align: center;">English*</td>
+    <td  style="text-align: center;">中文，English</td>
+    <td style="text-align: center;">English</td>
   </tr>
   <tr>
     <td style="text-align: center;">提示词长度上限</td>
-    <td colspan="2" style="text-align: center;">225 Tokens</td>
+    <td style="text-align: center;">1024 Tokens</td>
     <td style="text-align: center;">224 Tokens</td>
   </tr>
   <tr>
-    <td style="text-align: center;">下载链接 (SAT)</td>
-    <td colspan="3" style="text-align: center;"><a href="./sat/README.md">SAT</a></td>
-  </tr>
-  <tr>
-    <td style="text-align: center;">下载链接 (Diffusers)</td>
-    <td colspan="2"  style="text-align: center;"> 未适配 </td>
+    <td style="text-align: center;">下载链接 </td>
+    <td style="text-align: center;"><a href="https://huggingface.co/THUDM/CogView4-6B">🤗 HuggingFace</a><br><a href="https://modelscope.cn/models/ZhipuAI/CogView4-6B">🤖 ModelScope</a><br><a href="https://wisemodel.cn/models/ZhipuAI/CogView4-6B">🟣 WiseModel</a></td>
     <td style="text-align: center;"><a href="https://huggingface.co/THUDM/CogView3-Plus-3B">🤗 HuggingFace</a><br><a href="https://modelscope.cn/models/ZhipuAI/CogView3-Plus-3B">🤖 ModelScope</a><br><a href="https://wisemodel.cn/models/ZhipuAI/CogView3-Plus-3B">🟣 WiseModel</a></td>
   </tr>
 
 </table>
 
-**数据解释**
+### 显存占用
 
-+ 所有推理测试均在单卡A100上运行，批量大小为4。并使用`PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`以节约显存。
-+ 模型仅支持英语输入，其他语言可以通过大模型润色时翻译为英语。
-+ 本次测试环境均使用`SAT`框架测试，众多优化点还未完善，我们会联合社区一起制作`diffusers`库版本的模型。`diffusers`
-  仓库支持后，将会使用`diffusers` 测试。预计将于 2024 年 11 月发布。
+DIT模型均使用 `BF16` 精度,  `batchsize=4` 进行测试，测试结果如下表所示:
 
-## 快速开始
+| 分辨率         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit | 
+|-------------|------------------------------|-----------------------------|-----------------------------------------------------| 
+| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 | 
+| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 | 
+| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 | 
+| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 | 
+| 2048 * 2048 | 43GB                         | 21GB                        | 14G                                                 | 
+
+此外, 建议您的设备至少拥有`32GB`内存，以防止进程被杀。
+
+### 模型指标
+
+我们在多个榜单上进行了测试, 并得到了如下的成绩:
+
+#### dpg_bench
+
+| model        | overall   | global    | entity    | attribute | relation  | other     |
+|--------------|-----------|-----------|-----------|-----------|-----------|-----------|
+| sdxl         | 74.65     | 83.27     | 82.43     | 80.91     | 86.76     | 80.41     |
+| pixart-alpha | 71.11     | 74.97     | 79.32     | 78.60     | 82.57     | 76.96     |
+| sd3-medium   | 84.08     | 87.90     | **91.01** | 88.83     | 80.70     | 88.68     |
+| dalle-3      | 83.50     | **90.97** | 89.61     | 88.39     | 90.58     | 89.83     |
+| flux.1-dev   | 83.79     | 85.80     | 86.79     | 89.98     | 90.04     | **89.90** |
+| **cogview4** | **85.13** | 83.85     | 90.35     | **91.17** | **91.14** | 87.29     |
+
+#### Geneval
+
+| model        | overall  | single   | two      | counting | colors   | position | Color attribution |
+|--------------|----------|----------|----------|----------|----------|----------|-------------------|
+| sdxl         | 0.55     | 0.98     | 0.74     | 0.39     | 0.85     | 0.15     | 0.23              |
+| pixart-alpha | 0.48     | 0.98     | 0.50     | 0.44     | 0.80     | 0.08     | 0.07              |
+| sd3-meidum   | **0.74** | **0.99** | **0.94** | **0.72** | **0.89** | 0.33     | **0.60**          |
+| dall-e 3     | 0.67     | 0.96     | 0.87     | 0.47     | 0.83     | 0.43     | 0.45              |
+| flux.1-dev   | 0.66     | 0.98     | 0.79     | 0.73     | 0.77     | 0.22     | 0.45              |
+| **cogview4** | 0.73     | **0.99** | 0.86     | 0.66     | 0.79     | **0.48** | 0.58              |
+
+#### t2i_compbench
+
+| model        | color      | shape      | texture    | 2d-spatial | 3d-spatial | numeracy   | Non-spatial clip | complex 3-in-1 |
+|--------------|------------|------------|------------|------------|------------|------------|------------------|----------------|
+| sdxl         | 0.5879     | 0.4687     | 0.5299     | 0.2133     | 0.3566     | 0.4988     | 0.3119           | 0.3237         |
+| pixart-alpha | 0.6690     | 0.4927     | 0.6477     | 0.2064     | 0.3901     | 0.5058     | **0.3197**       | 0.3433         |
+| sd3-medium   | **0.8132** | 0.5885     | **0.7334** | **0.3200** | **0.4084** | 0.6174     | 0.3140           | 0.3771         |
+| dall-e 3     | 0.7785     | **0.6205** | 0.7036     | 0.2865     | 0.3744     | 0.5880     | 0.3003           | **0.3773**     |
+| flux.1-dev   | 0.7572     | 0.5066     | 0.6300     | 0.2700     | 0.3992     | 0.6165     | 0.3065           | 0.3628         |
+| **cogview4** | 0.7786     | 0.5880     | 0.6983     | 0.3075     | 0.3708     | **0.6626** | 0.3056           | 0.3869         |
+
+## 中文文字准确率评测
+
+| model        | Precision  | Recall     | F1 Score   | pick@4     |
+|--------------|------------|------------|------------|------------|
+| kolors       | 0.6094     | 0.1886     | 0.2880     | 0.1633     |
+| **cogview4** | **0.6969** | **0.5532** | **0.6168** | **0.3265** |
+
+## 推理模型
 
 ### 提示词优化
 
-虽然 CogView3 系列模型都是通过长篇合成图像描述进行训练的，但我们强烈建议在文本生成图像之前，基于大语言模型（LLMs）进行提示词的重写操作，这将大大提高生成质量。
+虽然 CogView4 系列模型都是通过长篇合成图像描述进行训练的，但我们强烈建议在文本生成图像之前，基于大语言模型进行提示词的重写操作，这将大大提高生成质量。
 
-我们提供了一个 [示例脚本](prompt_optimize.py)。我们建议您运行这个脚本，以实现对提示词对润色
-
-```shell
-python prompt_optimize.py --api_key "智谱AI API Key" --prompt {你的提示词} --base_url "https://open.bigmodel.cn/api/paas/v4" --model "glm-4-plus"
-```
-
-### 推理模型(Diffusers)
-
-首先，确保从源代码安装`diffusers`库。
+我们提供了一个 [示例脚本](inference/prompt_optimize.py)。我们建议您运行这个脚本，以实现对提示词对润色。请注意，`CogView4` 和
+`CogView3` 模型的提示词优化使用的few shot不同。需要区分。
 
 ```shell
-pip install git+https://github.com/huggingface/diffusers.git
+cd inference
+python prompt_optimize.py --api_key "智谱AI API Key" --prompt {你的提示词} --base_url "https://open.bigmodel.cn/api/paas/v4" --model "glm-4-plus" --cogview_version "cogview4"
 ```
-接着，运行以下代码：
+
+### 推理模型
+
+以 `BF16` 的精度运行模型:
 
 ```python
-from diffusers import CogView3PlusPipeline
+from diffusers import CogView4Pipeline
 import torch
 
-pipe = CogView3PlusPipeline.from_pretrained("THUDM/CogView3-Plus-3B", torch_dtype=torch.float16).to("cuda")
+pipe = CogView4Pipeline.from_pretrained("THUDM/CogView4-6B", torch_dtype=torch.bfloat16).to("cuda")
 
 # Open it for reduce GPU memory usage
 pipe.enable_model_cpu_offload()
@@ -128,63 +161,23 @@ pipe.vae.enable_tiling()
 prompt = "A vibrant cherry red sports car sits proudly under the gleaming sun, its polished exterior smooth and flawless, casting a mirror-like reflection. The car features a low, aerodynamic body, angular headlights that gaze forward like predatory eyes, and a set of black, high-gloss racing rims that contrast starkly with the red. A subtle hint of chrome embellishes the grille and exhaust, while the tinted windows suggest a luxurious and private interior. The scene conveys a sense of speed and elegance, the car appearing as if it's about to burst into a sprint along a coastal road, with the ocean's azure waves crashing in the background."
 image = pipe(
     prompt=prompt,
-    guidance_scale=7.0,
+    guidance_scale=3.5,
     num_images_per_prompt=1,
     num_inference_steps=50,
     width=1024,
     height=1024,
 ).images[0]
 
-image.save("cogview3.png")
+image.save("cogview4.png")
 ```
 
-更多推理代码，请关注[inference](inference/cli_demo.py),该文件夹还包含一个Gradio封装的简单WEBUI代码。
+其他更多推理代码，请查看:
 
-### 推理模型 (SAT)
+1. 使用`int4`加载`ext encoder` 以及推理代码的完整注释，查看 [这里](inference/cli_demo_cogview4.py)。
+2. 搭建 `gradio` GUI DEMO，查看 [这里](inference/gradio_web_demo.py)
 
-请查看 [sat](sat/README_zh.md) 手把手教程实现模型推理。
+## 开源协议
 
-### 开源计划
+本仓库代码和 CogView3 模型均采用 [Apache 2.0](./LICENSE) 开源协议。
 
-由于项目处于初步阶段，我们正在制作以下内容：
-
-+ [ ] CogView3-Plus-3B SAT版本的模型微调，包括SFT和Lora微调
-+ [X] CogView3-Plus-3B Diffuser库版本模型的推理
-+ [ ] CogView3-Plus-3B Diffuser库版本模型的微调
-+ [ ] CogView3-Plus-3B 模型相关周边，包括ControlNet等工作。
-
-## CogView3（ECCV'24）
-
-官方论文仓库：[CogView3: Finer and Faster Text-to-Image Generation via Relay Diffusion](https://arxiv.org/abs/2403.05121)
-
-CogView3 是一种新颖的文本生成图像系统，采用了接力扩散的方式，将生成高分辨率图像的过程分解为多个阶段。通过接力的超分辨率过程，对低分辨率生成结果添加高斯噪声，并从这些带噪声的图像开始扩散。我们的结果显示，CogView3
-的表现优于 SDXL，获胜率达到 77.0%。此外，通过对扩散模型的逐步蒸馏，CogView3 能够在推理时间仅为 SDXL 1/10 的情况下，生成可比的结果。
-
-![CogView3 示例](resources/CogView3_showcase.png)
-![CogView3 流程](resources/CogView3_pipeline.jpg)
-
-人类评估的对比结果：
-
-![CogView3 evaluation](resources/CogView3_evaluation.png)
-
-## 引用
-
-🌟 如果您发现我们的工作有所帮助，欢迎引用我们的文章，留下宝贵的stars
-
-```
-@article{zheng2024cogview3,
-  title={Cogview3: Finer and faster text-to-image generation via relay diffusion},
-  author={Zheng, Wendi and Teng, Jiayan and Yang, Zhuoyi and Wang, Weihan and Chen, Jidong and Gu, Xiaotao and Dong, Yuxiao and Ding, Ming and Tang, Jie},
-  journal={arXiv preprint arXiv:2403.05121},
-  year={2024}
-}
-```
-
-我们欢迎您的贡献，您可以点击[这里](resources/contribute_zh.md)查看更多信息。
-
-## 模型协议
-
-该代码库基于 [Apache 2.0 License](LICENSE) 协议发布。
-
-CogView3-Base、CogView3-Relay 和 CogView3-Plus 模型（包括 UNet 模块、Transformers 模块和 VAE
-模块）基于 [Apache 2.0 License](LICENSE) 协议发布。
+我们欢迎和感谢你贡献代码，你可以在 [这里](resources/contribute.md) 查看贡献指南。
