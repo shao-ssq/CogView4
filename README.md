@@ -16,7 +16,7 @@
 
 - 🔥🔥 ```2025/03/04```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version
   of **CogView-4** model, which has 6B parameters, supports native Chinese input, and Chinese text-to-image generation.
-  You can try it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4-6B-Space).
+  You can try it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4).
 - ```2024/10/13```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version of
   **CogView-3Plus-3B** model. You can try
   it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space).
