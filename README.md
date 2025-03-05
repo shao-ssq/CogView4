@@ -27,11 +27,9 @@
 
 ## Project Plan
 
-- [X] diffusers workflow adaptation
-- [ ] ComfyUI diffusers nodes
-- [ ] Fine-tuning scripts and ecosystem kits
-- [ ] ControlNet model release
-- [ ] Cog series fine-tuning kit
+- [X] Diffusers workflow adaptation  
+- [ ] Cog series fine-tuning suite (coming soon)  
+- [ ] ControlNet models and training code  
 
 ## Model Introduction
 
@@ -130,7 +128,7 @@ We've tested on multiple benchmarks and achieved the following scores:
 
 ## Chinese Text Accuracy Evaluation
 
-| Model           | Precision  | Recall     | F1 Score   | pick@4     |
+| Model           | Precision  | Recall     | F1 Score   | Pick@4     |
 |-----------------|------------|------------|------------|------------|
 | Kolors          | 0.6094     | 0.1886     | 0.2880     | 0.1633     |
 | **CogView4-6B** | **0.6969** | **0.5532** | **0.6168** | **0.3265** |
