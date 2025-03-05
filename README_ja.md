@@ -7,7 +7,7 @@
 <img src=resources/logo.svg width="50%"/>
 </div>
 <p align="center">
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space" target="_blank"> 🤗 HuggingFace Space</a>  <a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a> <a href="resources/WECHAT.md" target="_blank"> 👋 WeChat Community</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 Paper</a> 
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>  <a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a> <a href="resources/WECHAT.md" target="_blank"> 👋 WeChat Community</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 Paper</a> 
 </p>
 
 
