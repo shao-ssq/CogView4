@@ -157,14 +157,25 @@ examples = [
     "A vintage red convertible with gleaming chrome finishes sits attractively under the golden hues of a setting sun, parked on a deserted cobblestone street in a charming old town. The car's polished body reflects the surrounding quaint buildings and the few early evening stars beginning to twinkle in the gentle gradient of the twilight sky. A light breeze teases the few fallen leaves near the car's pristine white-walled tires, which rest casually by the sidewalk, hinting at the leisurely pace of life in this serene setting.",
 ]
 with gr.Blocks() as demo:
-    gr.Markdown("""
-            <div style="text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 20px;">
-             CogView4-6B 内测体验地址
-           </div>
-           <div style="text-align: center; font-size: 15px; font-weight: bold; color: red; margin-bottom: 20px;">
-            ⚠️ 请不要主动传播该demo和模型
-            </div>
-        """)
+    gr.HTML("""
+                <div style="text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 20px;">
+                 CogView4-6B Hugging Face Space🤗
+               </div>
+               <div style="text-align: center;">
+                   <a href="https://huggingface.co/THUDM/CogView4-6B">🤗 Model Hub | 
+                   <a href="https://github.com/THUDM/CogView4">🌐 Github</a> |
+                   <a href="https://arxiv.org/abs/2403.05121">📜 arxiv </a>
+               </div>
+               <div style="text-align: center;display: flex;justify-content: center;align-items: center;margin-top: 1em;margin-bottom: .5em;">
+                  <span>If the Space is too busy, duplicate it to use privately</span>
+                  <a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4?duplicate=true"><img src="https://huggingface.co/datasets/huggingface/badges/resolve/main/duplicate-this-space-lg.svg" width="160" style="
+                    margin-left: .75em;
+                "></a>
+               </div>
+               <div style="text-align: center; font-size: 15px; font-weight: bold; color: red; margin-bottom: 20px;">
+                ⚠️ This demo is for academic research and experiential use only. 
+                </div>
+            """)
 
     with gr.Column():
         with gr.Row():
