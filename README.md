@@ -188,7 +188,7 @@ For more inference code, please check:
 git clone https://github.com/THUDM/CogView4
 cd CogView4
 git clone https://huggingface.co/THUDM/CogView4-6B
-pip install -r requirements.txt
+pip install -r inference/requirements.txt
 ```
 ## Quickstart
 12G VRAM
