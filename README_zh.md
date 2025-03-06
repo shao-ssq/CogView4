@@ -6,10 +6,15 @@
 <div align="center">
 <img src=resources/logo.svg width="50%"/>
 </div>
-<p align="center">
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"   target="_blank"> 🤗 HuggingFace Space</a>  <a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a>  <a href="resources/WECHAT.md" target="_blank"> 👋 微信社群</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 论文</a> 
-</p>
 
+<p align="center">  
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 HuggingFace Space</a>  
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 ModelScope Space</a>  
+<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ 智谱MaaS平台(更快)</a>  
+<br>  
+<a href="resources/WECHAT.md" target="_blank"> 👋 微信社区</a>  
+<a href="https://arxiv.org/abs/2403.05121" target="_blank"> 📚 CogView3 论文</a>  
+</p>  
 
 ![showcase.png](resources/showcase.png)
 
