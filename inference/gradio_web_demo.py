@@ -5,7 +5,7 @@ Running the Script:
 To run the script, use the following command with appropriate arguments:
 
 ```bash
-OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4“ python gradio_web_demo.py
+OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4" python gradio_web_demo.py
 ```
 
 We use [glm-4-plus](https://bigmodel.cn/dev/howuse/glm-4) as the large model for prompt refinement. You can also choose other large models, such as GPT-4o, for refinement.”
@@ -20,12 +20,50 @@ from datetime import datetime, timedelta
 import gradio as gr
 import random
 from diffusers import CogView4Pipeline
+from diffusers.models import AutoencoderKL, CogView4Transformer2DModel
 import torch
 from openai import OpenAI
 
+from transformers import GlmModel
+from torchao.quantization import quantize_, int8_weight_only
+import gc
+
+os.environ["OPENAI_BASE_URL"]="https://open.bigmodel.cn/api/paas/v4"
+mode = os.environ.get("MODE", "1")
+
+total_vram_in_gb = torch.cuda.get_device_properties(0).total_memory / 1073741824
+print(f'\033[32mCUDA版本：{torch.version.cuda}\033[0m')
+print(f'\033[32mPytorch版本：{torch.__version__}\033[0m')
+print(f'\033[32m显卡型号：{torch.cuda.get_device_name()}\033[0m')
+print(f'\033[32m显存大小：{total_vram_in_gb:.2f}GB\033[0m')
+if torch.cuda.get_device_capability()[0] >= 8:
+    print(f'\033[32m支持BF16\033[0m')
+    dtype = torch.bfloat16
+else:
+    print(f'\033[32m不支持BF16，使用FP16\033[0m')
+    dtype = torch.float16
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-pipe = CogView4Pipeline.from_pretrained("THUDM/CogView4-6B", torch_dtype=torch.bfloat16).to(device)
+model_path = "CogView4-6B"
+text_encoder = GlmModel.from_pretrained(
+    model_path + "/text_encoder", 
+    torch_dtype=dtype
+)
+transformer = CogView4Transformer2DModel.from_pretrained(
+    model_path + "/transformer", 
+    torch_dtype=dtype
+)
+if mode in ["1","2"]:
+    quantize_(text_encoder, int8_weight_only())
+    quantize_(transformer, int8_weight_only())
+pipe = CogView4Pipeline.from_pretrained(
+    model_path, 
+    text_encoder=text_encoder, 
+    transformer=transformer,
+    torch_dtype=dtype,
+).to(device)
+if mode in ["1","3"]:
+    pipe.enable_model_cpu_offload()
 pipe.vae.enable_slicing()
 pipe.vae.enable_tiling()
 
@@ -39,9 +77,11 @@ def clean_string(s):
 
 def convert_prompt(
     prompt: str,
+    key: str,
     retry_times: int = 5,
 ) -> str:
-    if not os.environ.get("OPENAI_API_KEY"):
+    os.environ["OPENAI_API_KEY"]=key
+    if not key:
         return prompt
     client = OpenAI()
     prompt = clean_string(prompt)
@@ -90,7 +130,7 @@ def convert_prompt(
                         "content": f"Create an imaginative image descriptive caption for the user input : {prompt}",
                     },
                 ],
-                model="glm-4-plus",
+                model="glm-4-flash",
                 temperature=0.01,
                 top_p=0.7,
                 stream=False,
@@ -124,6 +164,7 @@ def delete_old_files():
 
 threading.Thread(target=delete_old_files, daemon=True).start()
 
+
 def infer(
     prompt,
     seed,
@@ -135,6 +176,11 @@ def infer(
     num_images,
     progress=gr.Progress(track_tqdm=True),
 ):
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+
     if randomize_seed:
         seed = random.randint(0, 65536)
 
@@ -151,111 +197,118 @@ def infer(
     return images, seed
 
 
+def update_max_height(width):
+            max_height = MAX_PIXELS // width
+            return gr.update(maximum=max_height)
+
+
+def update_max_width(height):
+    max_width = MAX_PIXELS // height
+    return gr.update(maximum=max_width)
+
+
 examples = [
     "这是一幅充满皮克斯风格的动画渲染图像，展现了一只拟人化的粘土风格小蛇。这条快乐的小蛇身着魔术师装扮，占据了画面下方三分之一的位置，显得俏皮而生动。它的头上戴着一顶黑色羊毛材质的复古礼帽，身上穿着一件设计独特的红色棉袄，白色的毛袖增添了一抹温暖的对比。小蛇的鳞片上精心绘制了金色梅花花纹，显得既华丽又不失可爱。它的腹部和脸庞呈现洁白，与红色的身体形成鲜明对比。 这条蜿蜒的小蛇拥有可爱的塑胶手办质感，仿佛随时会从画面中跃然而出。背景是一片鲜艳的红色，地面上散布着宝箱、金蛋和红色灯笼等装饰物，营造出浓厚的节日气氛。画面的上半部分用金色连体字书写着 “Happy New Year”，庆祝新年的到来，同时也暗示了蛇年的到来，为整幅画面增添了一份节日的喜悦和祥瑞。",
     "在这幅如梦似幻的画作中，一辆由云朵构成的毛绒汽车轻盈地漂浮在蔚蓝的高空之中。这辆汽车设计独特，车身完全由洁白、蓬松的云朵编织而成，每一处都散发着柔软而毛茸茸的质感。从车顶到轮胎，再到它的圆润车灯，无一不是由细腻的云丝构成，仿佛随时都可能随风轻轻摆动。车窗也是由透明的云物质构成，同样覆盖着一层细软的绒毛，让人不禁想要触摸。 这辆神奇的云朵汽车仿佛是魔法世界中的交通工具，它悬浮在夕阳映照的绚丽天空之中，周围是五彩斑斓的晚霞和悠然飘浮的云彩。夕阳的余晖洒在云朵车上，为其柔软的轮廓镀上了一层金色的光辉，使得整个场景既温馨又神秘，引人入胜。",
     "A vintage red convertible with gleaming chrome finishes sits attractively under the golden hues of a setting sun, parked on a deserted cobblestone street in a charming old town. The car's polished body reflects the surrounding quaint buildings and the few early evening stars beginning to twinkle in the gentle gradient of the twilight sky. A light breeze teases the few fallen leaves near the car's pristine white-walled tires, which rest casually by the sidewalk, hinting at the leisurely pace of life in this serene setting.",
 ]
-with gr.Blocks() as demo:
-    gr.HTML("""
-                <div style="text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 20px;">
-                 CogView4-6B Hugging Face Space🤗
-               </div>
-               <div style="text-align: center;">
-                   <a href="https://huggingface.co/THUDM/CogView4-6B">🤗 Model Hub | 
-                   <a href="https://github.com/THUDM/CogView4">🌐 Github</a> |
-                   <a href="https://arxiv.org/abs/2403.05121">📜 arxiv </a>
-               </div>
-               <div style="text-align: center;display: flex;justify-content: center;align-items: center;margin-top: 1em;margin-bottom: .5em;">
-                  <span>If the Space is too busy, duplicate it to use privately</span>
-                  <a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4?duplicate=true"><img src="https://huggingface.co/datasets/huggingface/badges/resolve/main/duplicate-this-space-lg.svg" width="160" style="
-                    margin-left: .75em;
-                "></a>
-               </div>
-               <div style="text-align: center; font-size: 15px; font-weight: bold; color: red; margin-bottom: 20px;">
-                ⚠️ This demo is for academic research and experiential use only. 
-                </div>
-            """)
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
+    gr.Markdown("""
+            <div>
+                <h2 style="font-size: 30px;text-align: center;">CogView4-6B</h2>
+            </div>
+            <div style="text-align: center;">
+                <a href="https://github.com/THUDM/CogView4">🌐 Github</a> |
+                <a href="https://arxiv.org/abs/2403.05121">📜 arXiv </a>
+            </div>
+            <div style="text-align: center; font-weight: bold; color: red;">
+                ⚠️ 该演示仅供学术研究和体验使用。
+            </div>
+            </div>
+        """)
 
     with gr.Column():
         with gr.Row():
-            prompt = gr.Text(
-                label="Prompt",
-                show_label=False,
-                max_lines=15,
-                placeholder="Enter your prompt",
-                container=False,
-            )
-
-        with gr.Row():
-            enhance = gr.Button("Enhance Prompt (Strongly Suggest)", scale=1)
-            enhance.click(convert_prompt, inputs=[prompt], outputs=[prompt])
-            run_button = gr.Button("Run", scale=1)
-        num_images = gr.Radio(choices=[1, 2, 4], label="Number of Images", value=2)
-        result = gr.Gallery(label="Results", show_label=True, columns=2, rows=2)
+            with gr.Column():
+                with gr.Row():
+                    prompt = gr.Text(
+                        label="Prompt",
+                        show_label=False,
+                        max_lines=15,
+                        placeholder="Enter your prompt",
+                        container=False,
+                    )
+                with gr.Row():
+                    enhance = gr.Button("Enhance Prompt (Strongly Suggest)", scale=1)
+                    run_button = gr.Button("Run", scale=1)
+                with gr.Row():
+                    num_images = gr.Number(
+                        label="Number of Images",
+                        minimum=1,
+                        maximum=8,
+                        step=1,
+                        value=2,
+                    )
+                    key = gr.Textbox(
+                        label="Key",
+                        placeholder="Enter your key",
+                        type="password",
+                        max_lines=1,
+                    )
+                with gr.Row():
+                    seed = gr.Slider(
+                        label="Seed",
+                        minimum=0,
+                        maximum=65536,
+                        step=1,
+                        value=0,
+                    )
+                    randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
+                with gr.Row():
+                    width = gr.Slider(
+                        label="Width",
+                        minimum=512,
+                        maximum=2048,
+                        step=32,
+                        value=1024,
+                    )
+                    height = gr.Slider(
+                        label="Height",
+                        minimum=512,
+                        maximum=2048,
+                        step=32,
+                        value=1024,
+                    )
+                with gr.Row():
+                    guidance_scale = gr.Slider(
+                        label="Guidance scale",
+                        minimum=0.0,
+                        maximum=10.0,
+                        step=0.1,
+                        value=3.5,
+                    )
+                    num_inference_steps = gr.Slider(
+                        label="Number of inference steps",
+                        minimum=10,
+                        maximum=100,
+                        step=1,
+                        value=50,
+                    )
+            with gr.Column():
+                result = gr.Gallery(label="Results", show_label=True)
 
         MAX_PIXELS = 2**21
+        enhance.click(convert_prompt, inputs=[prompt, key], outputs=[prompt])
+        width.change(update_max_height, inputs=[width], outputs=[height])
+        height.change(update_max_width, inputs=[height], outputs=[width])
 
-        def update_max_height(width):
-            max_height = MAX_PIXELS // width
-            return gr.update(maximum=max_height)
-
-        def update_max_width(height):
-            max_width = MAX_PIXELS // height
-            return gr.update(maximum=max_width)
-
-        with gr.Accordion("Advanced Settings", open=False):
-            seed = gr.Slider(
-                label="Seed",
-                minimum=0,
-                maximum=65536,
-                step=1,
-                value=0,
-            )
-
-            randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
-
-            with gr.Row():
-                width = gr.Slider(
-                    label="Width",
-                    minimum=512,
-                    maximum=2048,
-                    step=32,
-                    value=1024,
-                )
-
-                height = gr.Slider(
-                    label="Height",
-                    minimum=512,
-                    maximum=2048,
-                    step=32,
-                    value=1024,
-                )
-            width.change(update_max_height, inputs=[width], outputs=[height])
-            height.change(update_max_width, inputs=[height], outputs=[width])
-            with gr.Row():
-                guidance_scale = gr.Slider(
-                    label="Guidance scale",
-                    minimum=0.0,
-                    maximum=10.0,
-                    step=0.1,
-                    value=3.5,
-                )
-
-                num_inference_steps = gr.Slider(
-                    label="Number of inference steps",
-                    minimum=10,
-                    maximum=100,
-                    step=1,
-                    value=50,
-                )
         with gr.Column():
             gr.Markdown("### Examples (Enhance prompt finish)")
             for i, ex in enumerate(examples):
                 with gr.Row():
                     ex_btn = gr.Button(value=ex, variant="secondary", elem_id=f"ex_btn_{i}", scale=3)
                     ex_img = gr.Image(
-                        value=f"../img/img_{i + 1}.png",
+                        value=f"inference/img/img_{i + 1}.png",
                         label="Effect",
                         interactive=False,
                         height=130,
@@ -264,17 +317,6 @@ with gr.Blocks() as demo:
                     )
                     ex_btn.click(fn=lambda ex=ex: ex, inputs=[], outputs=prompt)
 
-    def update_gallery_layout(num_images):
-        if num_images == 1:
-            return gr.update(columns=1, rows=1)
-        elif num_images == 2:
-            return gr.update(columns=2, rows=1)
-        elif num_images == 4:
-            return gr.update(columns=2, rows=2)
-        return gr.update(columns=2, rows=2)
-
-    num_images.change(update_gallery_layout, inputs=[num_images], outputs=[result])
-
     gr.on(
         triggers=[run_button.click, prompt.submit],
         fn=infer,
@@ -282,4 +324,4 @@ with gr.Blocks() as demo:
         outputs=[result, seed],
     )
 
-demo.queue().launch()
+demo.queue().launch(inbrowser=True)
