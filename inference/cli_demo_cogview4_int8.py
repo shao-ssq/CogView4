@@ -21,17 +21,31 @@ from diffusers import CogView4Pipeline
 import torch
 import argparse
 from transformers import GlmModel, BitsAndBytesConfig
+from torchao.quantization import quantize_, int8_weight_only, int4_weight_only
 
 
 def generate_image(
     prompt, model_path, guidance_scale, num_images_per_prompt, num_inference_steps, width, height, output_path, dtype
 ):
-    # Load the pre-trained model with the specified precision
-    # text_encoder = GlmModel.from_pretrained(model_path + "/text_encoder", quantization_config=BitsAndBytesConfig(load_in_4bit=True), torch_dtype=dtype)
-    # pipe = CogView4Pipeline.from_pretrained(model_path, text_encoder=text_encoder, torch_dtype=dtype)
-    pipe = CogView4Pipeline.from_pretrained(model_path, torch_dtype=dtype)
+    # Load the pre-trained model with int8
+    """text_encoder = GlmModel.from_pretrained(
+        model_path + "/text_encoder", 
+        torch_dtype=dtype
+    )
+    quantize_(text_encoder, int8_weight_only())
+    transformer = CogView4Transformer2DModel.from_pretrained(
+        model_path + "/transformer", 
+        torch_dtype=dtype
+    )
+    quantize_(transformer, int8_weight_only())
+    pipe = CogView4Pipeline.from_pretrained(
+        model_path, 
+        text_encoder=text_encoder, 
+        transformer=transformer,
+        torch_dtype=dtype,
+    ).to("cuda")"""
+    pipe = CogView4Pipeline.from_pretrained(model_path, torch_dtype=dtype).to("cuda")
 
-    # pipe.to("cuda")
     pipe.enable_model_cpu_offload()
     pipe.vae.enable_slicing()
     pipe.vae.enable_tiling()
