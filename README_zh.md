@@ -172,13 +172,13 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
-For more inference code, please check:
+更多推理代码，可以参考：
 
-1. For using `BNB int4` to load `text encoder` and complete inference code annotations,
-   check [here](inference/cli_demo_cogview4.py).
-2. For using `TorchAO int8 or int4` to load `text encoder & transformer` and complete inference code annotations,
-   check [here](inference/cli_demo_cogview4_int8.py).
-3. For setting up a `gradio` GUI DEMO, check [here](inference/gradio_web_demo.py).
+1. 用 `BNB int4` 加载 `text encoder` 代码，
+   参考[这里](inference/cli_demo_cogview4.py)。
+2. 用 `TorchAO int8 or int4` 加载 `text encoder & transformer` 代码，
+   参考[这里](inference/cli_demo_cogview4_int8.py)。
+3. 使用 `gradio` 界面示例, 参考[这里](inference/gradio_web_demo.py)。
 ## 安装
 ```
 git clone https://github.com/THUDM/CogView4
@@ -202,7 +202,6 @@ MODE=3 python inference/gradio_web_demo.py
 48G VRAM 64G RAM
 ```
 MODE=4 python inference/gradio_web_demo.py
-```
 ```
 
 ## 开源协议
