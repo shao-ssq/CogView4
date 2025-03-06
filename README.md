@@ -176,7 +176,13 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
+For more inference code, please check:
 
+1. For using `BNB int4` to load `text encoder` and complete inference code annotations,
+   check [here](inference/cli_demo_cogview4.py).
+2. For using `TorchAO int8 or int4` to load `text encoder & transformer` and complete inference code annotations,
+   check [here](inference/cli_demo_cogview4_int8.py).
+3. For setting up a `gradio` GUI DEMO, check [here](inference/gradio_web_demo.py).
 ## Installation
 ```
 git clone https://github.com/THUDM/CogView4
@@ -187,19 +193,19 @@ pip install -r requirements.txt
 ## Quickstart
 12G VRAM
 ```
-MODE=1 python app.py
+MODE=1 python inference/gradio_web_demo.py
 ```
 24G VRAM 32G RAM
 ```
-MODE=2 python app.py
+MODE=2 python inference/gradio_web_demo.py
 ```
 24G VRAM 64G RAM
 ```
-MODE=3 python app.py
+MODE=3 python inference/gradio_web_demo.py
 ```
 48G VRAM 64G RAM
 ```
-MODE=4 python app.py
+MODE=4 python inference/gradio_web_demo.py
 ```
 
 ## License
