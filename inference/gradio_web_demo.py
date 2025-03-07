@@ -44,24 +44,26 @@ else:
     dtype = torch.float16
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-model_path = "CogView4-6B"
-text_encoder = GlmModel.from_pretrained(
-    model_path + "/text_encoder", 
-    torch_dtype=dtype
-)
-transformer = CogView4Transformer2DModel.from_pretrained(
-    model_path + "/transformer", 
-    torch_dtype=dtype
-)
+model_path = "THUDM/CogView4-6B"
+
+text_encoder = None
+transformer = None
 if mode in ["1","2"]:
+    # 注意：实际量化需要检查模型是否支持量化
+    from utils import quantize_, int8_weight_only
+    text_encoder = GlmModel.from_pretrained(model_path, subfolder="text_encoder", torch_dtype=dtype)
+    transformer = CogView4Transformer2DModel.from_pretrained(model_path, subfolder="transformer", torch_dtype=dtype)
     quantize_(text_encoder, int8_weight_only())
     quantize_(transformer, int8_weight_only())
+
+# 加载完整pipeline
 pipe = CogView4Pipeline.from_pretrained(
-    model_path, 
-    text_encoder=text_encoder, 
+    model_path,
+    text_encoder=text_encoder,  # 自动加载默认组件，除非需要自定义
     transformer=transformer,
     torch_dtype=dtype,
 ).to(device)
+
 if mode in ["1","3"]:
     pipe.enable_model_cpu_offload()
 pipe.vae.enable_slicing()
