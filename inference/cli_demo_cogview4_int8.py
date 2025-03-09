@@ -29,18 +29,18 @@ def generate_image(
 ):
     # Load the pre-trained model with int8
     """text_encoder = GlmModel.from_pretrained(
-        model_path + "/text_encoder", 
+        model_path + "/text_encoder",
         torch_dtype=dtype
     )
     quantize_(text_encoder, int8_weight_only())
     transformer = CogView4Transformer2DModel.from_pretrained(
-        model_path + "/transformer", 
+        model_path + "/transformer",
         torch_dtype=dtype
     )
     quantize_(transformer, int8_weight_only())
     pipe = CogView4Pipeline.from_pretrained(
-        model_path, 
-        text_encoder=text_encoder, 
+        model_path,
+        text_encoder=text_encoder,
         transformer=transformer,
         torch_dtype=dtype,
     ).to("cuda")"""

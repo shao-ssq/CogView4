@@ -28,44 +28,44 @@ from transformers import GlmModel
 from torchao.quantization import quantize_, int8_weight_only
 import gc
 
-os.environ["OPENAI_BASE_URL"]="https://open.bigmodel.cn/api/paas/v4"
+os.environ["OPENAI_BASE_URL"] = "https://open.bigmodel.cn/api/paas/v4"
 mode = os.environ.get("MODE", "1")
 
 total_vram_in_gb = torch.cuda.get_device_properties(0).total_memory / 1073741824
-print(f'\033[32mCUDA版本：{torch.version.cuda}\033[0m')
-print(f'\033[32mPytorch版本：{torch.__version__}\033[0m')
-print(f'\033[32m显卡型号：{torch.cuda.get_device_name()}\033[0m')
-print(f'\033[32m显存大小：{total_vram_in_gb:.2f}GB\033[0m')
+
+print(f"\033[32mCUDA版本：{torch.version.cuda}\033[0m")
+print(f"\033[32mPytorch版本：{torch.__version__}\033[0m")
+print(f"\033[32m显卡型号：{torch.cuda.get_device_name()}\033[0m")
+print(f"\033[32m显存大小：{total_vram_in_gb:.2f}GB\033[0m")
+
 if torch.cuda.get_device_capability()[0] >= 8:
-    print(f'\033[32m支持BF16\033[0m')
+    print(f"\033[32m支持BF16\033[0m")
     dtype = torch.bfloat16
 else:
-    print(f'\033[32m不支持BF16，使用FP16\033[0m')
+    print(f"\033[32m不支持BF16，使用FP16\033[0m")
     dtype = torch.float16
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-model_path = "THUDM/CogView4-6B"
+model_path = "/share/zyx/CogView4-6B-0228"
 
 text_encoder = None
 transformer = None
-if mode in ["1","2"]:
-    # 注意：实际量化需要检查模型是否支持量化
-    from utils import quantize_, int8_weight_only
+if mode in ["1", "2"]:
     text_encoder = GlmModel.from_pretrained(model_path, subfolder="text_encoder", torch_dtype=dtype)
     transformer = CogView4Transformer2DModel.from_pretrained(model_path, subfolder="transformer", torch_dtype=dtype)
     quantize_(text_encoder, int8_weight_only())
     quantize_(transformer, int8_weight_only())
 
-# 加载完整pipeline
 pipe = CogView4Pipeline.from_pretrained(
     model_path,
-    text_encoder=text_encoder,  # 自动加载默认组件，除非需要自定义
+    text_encoder=text_encoder,
     transformer=transformer,
     torch_dtype=dtype,
 ).to(device)
 
-if mode in ["1","3"]:
+if mode in ["1", "3"]:
     pipe.enable_model_cpu_offload()
+
 pipe.vae.enable_slicing()
 pipe.vae.enable_tiling()
 
@@ -82,7 +82,7 @@ def convert_prompt(
     key: str,
     retry_times: int = 5,
 ) -> str:
-    os.environ["OPENAI_API_KEY"]=key
+    os.environ["OPENAI_API_KEY"] = key
     if not key:
         return prompt
     client = OpenAI()
@@ -189,19 +189,19 @@ def infer(
     images = pipe(
         prompt=prompt,
         guidance_scale=guidance_scale,
-        num_images_per_prompt=num_images,  # 生成 num_images 张图
+        num_images_per_prompt=num_images,
         num_inference_steps=num_inference_steps,
         width=width,
         height=height,
         generator=torch.Generator().manual_seed(seed),
-    ).images  # 获取生成的图片列表
+    ).images
 
     return images, seed
 
 
 def update_max_height(width):
-            max_height = MAX_PIXELS // width
-            return gr.update(maximum=max_height)
+    max_height = MAX_PIXELS // width
+    return gr.update(maximum=max_height)
 
 
 def update_max_width(height):
