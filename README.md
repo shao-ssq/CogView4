@@ -86,7 +86,6 @@ DIT models are tested with `BF16` precision and `batchsize=4`, with results show
 | 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 |
 | 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 |
 | 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 |
-| 2048 * 2048 | 43GB                         | 21GB                        | 14G                                                 |
 
 Additionally, we recommend that your device has at least `32GB` of RAM to prevent the process from being killed.
 
