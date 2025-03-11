@@ -33,6 +33,12 @@
 - [ ] Cog系列微调套件 (即将到来)
 - [ ] ControlNet模型和训练代码
 
+## 社区工作
+
+我们将一些和本仓库相关的社区工作收录在这里。这些代码由社区成员维护，我们感谢他们的贡献。
+
++ [ComfyUI_CogView4_Wrapper](https://github.com/chflame163/ComfyUI_CogView4_Wrapper) ComfyUI 中 CogView4 项目的实现。
+
 ## 模型介绍
 
 ### 模型对比

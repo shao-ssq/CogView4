@@ -35,6 +35,12 @@
 - [ ] Cog series fine-tuning kits (coming soon)  
 - [ ] ControlNet models and training code  
 
+## Community Contributions
+
+We have collected some community projects related to this repository here. These projects are maintained by community members, and we appreciate their contributions.
+
++ [ComfyUI_CogView4_Wrapper](https://github.com/chflame163/ComfyUI_CogView4_Wrapper) - An implementation of the CogView4 project in ComfyUI.
+
 ## Model Introduction
 
 ### Model Comparison
