@@ -20,7 +20,7 @@
 
 ## 项目更新
 
-- 🔥🔥 ```2025/03/16```: 我们推出了 [CogKit](https://github.com/THUDM/CogKit) 工具，这是一个微调**CogView4**, **CogVideoX** 系列的微调和推理框架，一个工具包，玩转我们的多模态生成模型。
+- 🔥🔥 ```2025/03/21```: 我们推出了 [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) 模型，你也可以通过[训练代码](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) 自行训练。同时，我们推出了 [CogKit](https://github.com/THUDM/CogKit) 工具，这是一个微调**CogView4**, **CogVideoX** 系列的微调和推理框架，一个工具包，玩转我们的多模态生成模型。
 - ```2025/03/04```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-4**
   模型，该模型具有6B权重，支持原生中文输入，支持中文文字绘画。你可以前往[在线体验](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)。
 - ```2024/10/13```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-3Plus-3B**
@@ -31,8 +31,8 @@
 ## 项目计划
 
 - [X] diffusers 工作流适配
-- [ ] Cog系列微调套件 (即将到来)
-- [ ] ControlNet模型和训练代码
+- [X] Cog系列微调套件
+- [X] ControlNet模型和训练代码
 
 ## 社区工作
 
@@ -158,7 +158,7 @@ python prompt_optimize.py --api_key "智谱AI API Key" --prompt {你的提示词
 
 ### 推理模型
 
-以 `BF16` 的精度运行模型:
+以 `BF16` 的精度运行`CogView4-6B`模型:
 
 ```python
 from diffusers import CogView4Pipeline
@@ -183,37 +183,45 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
+
+以 `BF16` 的精度运行`CogView4-6B-Control`模型:
+
+```python
+from diffusers import CogView4ControlPipeline
+import torch
+from controlnet_aux import CannyDetector
+from diffusers.utils import load_image
+
+pipe = CogView4ControlPipeline.from_pretrained("THUDM/CogView4-6B-Control", torch_dtype=torch.bfloat16).to("cuda")
+
+# Open it for reduce GPU memory usage
+pipe.enable_model_cpu_offload()
+pipe.vae.enable_slicing()
+pipe.vae.enable_tiling()
+
+prompt = "A vibrant cherry red sports car sits proudly under the gleaming sun, its polished exterior smooth and flawless, casting a mirror-like reflection. The car features a low, aerodynamic body, angular headlights that gaze forward like predatory eyes, and a set of black, high-gloss racing rims that contrast starkly with the red. A subtle hint of chrome embellishes the grille and exhaust, while the tinted windows suggest a luxurious and private interior. The scene conveys a sense of speed and elegance, the car appearing as if it's about to burst into a sprint along a coastal road, with the ocean's azure waves crashing in the background."
+
+control_image = load_image("images.jpg") # change to your images
+processor = CannyDetector()
+
+image = pipe(
+    prompt=prompt,
+    control_image=control_image,
+    guidance_scale=3.5,
+    num_images_per_prompt=1,
+    num_inference_steps=50,
+    width=1024,
+    height=1024,
+).images[0]
+
+image.save("cogview4_control.png")
+```
+
 更多推理代码，可以参考：
 
-1. 用 `BNB int4` 加载 `text encoder` 代码，
-   参考[这里](inference/cli_demo_cogview4.py)。
-2. 用 `TorchAO int8 or int4` 加载 `text encoder & transformer` 代码，
-   参考[这里](inference/cli_demo_cogview4_int8.py)。
-3. 使用 `gradio` 界面示例, 参考[这里](inference/gradio_web_demo.py)。
-## 安装
-```
-git clone https://github.com/THUDM/CogView4
-cd CogView4
-git clone https://huggingface.co/THUDM/CogView4-6B
-pip install -r inference/requirements.txt
-```
-## 运行
-12G VRAM
-```
-MODE=1 python inference/gradio_web_demo.py
-```
-24G VRAM 32G RAM
-```
-MODE=2 python inference/gradio_web_demo.py
-```
-24G VRAM 64G RAM
-```
-MODE=3 python inference/gradio_web_demo.py
-```
-48G VRAM 64G RAM
-```
-MODE=4 python inference/gradio_web_demo.py
-```
+1. 用 `BNB int4` 加载 `text encoder` 代码，参考[这里](inference/cli_demo_cogview4.py)。
+2. 用 `TorchAO int8 or int4` 加载 `text encoder & transformer` 代码，参考[这里](inference/cli_demo_cogview4_int8.py)。
+3. 使用 `gradio` 界面运行`CogView4-6B-Control`, 参考[这里](inference/gradio_web_demo.py)。
 
 ## 开源协议
 

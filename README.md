@@ -19,7 +19,8 @@
 
 ## Project Updates
 
-- 🔥🔥 ```2025/03/16```: We have launched [CogKit](https://github.com/THUDM/CogKit), a fine-tuning and inference framework for the **CogView4** and **CogVideoX** series. This toolkit allows you to fully explore and utilize our multimodal generation models.
+- 🔥🔥 ```2025/03/21```: We have released the [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) model! You can also train it yourself using the [training code](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control).  
+  Additionally, we are launching [CogKit](https://github.com/THUDM/CogKit), a powerful toolkit for fine-tuning and inference of the **CogView4** and **CogVideoX** series, allowing you to fully explore our multimodal generation models.
 - ```2025/03/04```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version
   of **CogView-4** model, which has 6B parameters, supports native Chinese input, and Chinese text-to-image generation.
   You can try it [online](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4).
@@ -33,8 +34,8 @@
 ## Project Plan
 
 - [X] Diffusers workflow adaptation  
-- [ ] Cog series fine-tuning kits (coming soon)  
-- [ ] ControlNet models and training code  
+- [X] Cog series fine-tuning kits (coming soon)  
+- [X] ControlNet models and training code  
 
 ## Community Contributions
 
@@ -161,7 +162,7 @@ python prompt_optimize.py --api_key "Zhipu AI API Key" --prompt {your prompt} --
 
 ### Inference Model
 
-Run the model with `BF16` precision:
+Run the model `CogView4-6B` with `BF16` precision:
 
 ```python
 from diffusers import CogView4Pipeline
@@ -186,6 +187,40 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
+
+Run the `CogView4-6B-Control` model with `BF16` precision:
+
+```python
+from diffusers import CogView4ControlPipeline
+import torch
+from controlnet_aux import CannyDetector
+from diffusers.utils import load_image
+
+pipe = CogView4ControlPipeline.from_pretrained("THUDM/CogView4-6B-Control", torch_dtype=torch.bfloat16).to("cuda")
+
+# Open it for reduce GPU memory usage
+pipe.enable_model_cpu_offload()
+pipe.vae.enable_slicing()
+pipe.vae.enable_tiling()
+
+prompt = "A vibrant cherry red sports car sits proudly under the gleaming sun, its polished exterior smooth and flawless, casting a mirror-like reflection. The car features a low, aerodynamic body, angular headlights that gaze forward like predatory eyes, and a set of black, high-gloss racing rims that contrast starkly with the red. A subtle hint of chrome embellishes the grille and exhaust, while the tinted windows suggest a luxurious and private interior. The scene conveys a sense of speed and elegance, the car appearing as if it's about to burst into a sprint along a coastal road, with the ocean's azure waves crashing in the background."
+
+control_image = load_image("images.jpg") # change to your images
+processor = CannyDetector()
+
+image = pipe(
+    prompt=prompt,
+    control_image=control_image,
+    guidance_scale=3.5,
+    num_images_per_prompt=1,
+    num_inference_steps=50,
+    width=1024,
+    height=1024,
+).images[0]
+
+image.save("cogview4_control.png")
+```
+
 For more inference code, please check:
 
 1. For using `BNB int4` to load `text encoder` and complete inference code annotations,
@@ -193,30 +228,6 @@ For more inference code, please check:
 2. For using `TorchAO int8 or int4` to load `text encoder & transformer` and complete inference code annotations,
    check [here](inference/cli_demo_cogview4_int8.py).
 3. For setting up a `gradio` GUI DEMO, check [here](inference/gradio_web_demo.py).
-## Installation
-```
-git clone https://github.com/THUDM/CogView4
-cd CogView4
-git clone https://huggingface.co/THUDM/CogView4-6B
-pip install -r inference/requirements.txt
-```
-## Quickstart
-12G VRAM
-```
-MODE=1 python inference/gradio_web_demo.py
-```
-24G VRAM 32G RAM
-```
-MODE=2 python inference/gradio_web_demo.py
-```
-24G VRAM 64G RAM
-```
-MODE=3 python inference/gradio_web_demo.py
-```
-48G VRAM 64G RAM
-```
-MODE=4 python inference/gradio_web_demo.py
-```
 
 ## License
 
