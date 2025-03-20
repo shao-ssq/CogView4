@@ -46,4 +46,3 @@ Once your code meets the standard, there should be no errors.
 ## Naming Conventions
 1. Please use English names, do not use Pinyin or other language names. All comments should be in English.
 2. Please strictly follow the PEP8 specification and use underscores to separate words. Do not use names like a, b, c.
-

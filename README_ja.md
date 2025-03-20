@@ -8,8 +8,8 @@
 
 </div>
 <p align="center">
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>  
-<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a> 
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a>
 <a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ZhipuAI MaaS(Faster)</a>
 <br>
 <a href="resources/WECHAT.md" target="_blank"> 👋 WeChat Community</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 Paper</a>
@@ -20,7 +20,7 @@
 
 ## プロジェクトの更新
 
-- 🔥🔥 ```2025/03/21```: [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) モデルをリリースしました！[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を使用して、自身でトレーニングすることも可能です。  
+- 🔥🔥 ```2025/03/21```: [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) モデルをリリースしました！[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を使用して、自身でトレーニングすることも可能です。
   さらに、**CogView4** および **CogVideoX** シリーズのファインチューニングと推論を簡単に行えるツールキット [CogKit](https://github.com/THUDM/CogKit) も公開しました。私たちのマルチモーダル生成モデルを存分に活用してください！
 - ```2025/03/04```: [diffusers](https://github.com/huggingface/diffusers) バージョンの **CogView-4**
   モデルを適応し、オープンソース化しました。このモデルは6Bのパラメータを持ち、ネイティブの中国語入力と中国語のテキストから画像生成をサポートしています。オンラインで試すことができます [こちら](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)。
@@ -87,12 +87,12 @@
 
 DITモデルは `BF16` 精度と `batchsize=4` でテストされ、結果は以下の表に示されています：
 
-| 解像度         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit | 
-|-------------|------------------------------|-----------------------------|-----------------------------------------------------| 
-| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 | 
-| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 | 
-| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 | 
-| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 | 
+| 解像度         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit |
+|-------------|------------------------------|-----------------------------|-----------------------------------------------------|
+| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 |
+| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 |
+| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 |
+| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 |
 
 さらに、プロセスが強制終了されないようにするために、少なくとも`32GB`のRAMを持つデバイスを推奨します。
 

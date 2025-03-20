@@ -8,8 +8,8 @@
 </div>
 
 <p align="center">
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>  
-<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a> 
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a>
 <a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ZhipuAI MaaS(Faster)</a>
 <br>
 <a href="resources/WECHAT.md" target="_blank"> 👋 WeChat Community</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 Paper</a>
@@ -19,7 +19,7 @@
 
 ## Project Updates
 
-- 🔥🔥 ```2025/03/21```: We have released the [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) model! You can also train it yourself using the [training code](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control).  
+- 🔥🔥 ```2025/03/21```: We have released the [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) model! You can also train it yourself using the [training code](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control).
   Additionally, we are launching [CogKit](https://github.com/THUDM/CogKit), a powerful toolkit for fine-tuning and inference of the **CogView4** and **CogVideoX** series, allowing you to fully explore our multimodal generation models.
 - ```2025/03/04```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version
   of **CogView-4** model, which has 6B parameters, supports native Chinese input, and Chinese text-to-image generation.
@@ -33,9 +33,9 @@
 
 ## Project Plan
 
-- [X] Diffusers workflow adaptation  
-- [X] Cog series fine-tuning kits (coming soon)  
-- [X] ControlNet models and training code  
+- [X] Diffusers workflow adaptation
+- [X] Cog series fine-tuning kits (coming soon)
+- [X] ControlNet models and training code
 
 ## Community Contributions
 

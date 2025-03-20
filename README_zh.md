@@ -7,14 +7,14 @@
 <img src=resources/logo.svg width="50%"/>
 </div>
 
-<p align="center">  
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 HuggingFace Space</a>  
-<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 ModelScope Space</a>  
-<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ 智谱MaaS平台(更快)</a>  
-<br>  
-<a href="resources/WECHAT.md" target="_blank"> 👋 微信社区</a>  
-<a href="https://arxiv.org/abs/2403.05121" target="_blank"> 📚 CogView3 论文</a>  
-</p>  
+<p align="center">
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 HuggingFace Space</a>
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 ModelScope Space</a>
+<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ 智谱MaaS平台(更快)</a>
+<br>
+<a href="resources/WECHAT.md" target="_blank"> 👋 微信社区</a>
+<a href="https://arxiv.org/abs/2403.05121" target="_blank"> 📚 CogView3 论文</a>
+</p>
 
 ![showcase.png](resources/showcase.png)
 
@@ -86,12 +86,12 @@
 
 DIT模型均使用 `BF16` 精度,  `batchsize=4` 进行测试，测试结果如下表所示:
 
-| 分辨率         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit | 
-|-------------|------------------------------|-----------------------------|-----------------------------------------------------| 
-| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 | 
-| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 | 
-| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 | 
-| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 | 
+| 分辨率         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit |
+|-------------|------------------------------|-----------------------------|-----------------------------------------------------|
+| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 |
+| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 |
+| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 |
+| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 |
 
 此外, 建议您的设备至少拥有`32GB`内存，以防止进程被杀。
 

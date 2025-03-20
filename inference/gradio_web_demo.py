@@ -30,22 +30,22 @@ OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn
 ```
 """
 
+import gc
 import os
+import random
 import re
 import threading
 import time
 from datetime import datetime, timedelta
 
 import gradio as gr
-import random
+import torch
 from diffusers import CogView4Pipeline
 from diffusers.models import CogView4Transformer2DModel
-import torch
 from openai import OpenAI
-
+from torchao.quantization import int8_weight_only, quantize_
 from transformers import GlmModel
-from torchao.quantization import quantize_, int8_weight_only
-import gc
+
 
 total_vram_in_gb = torch.cuda.get_device_properties(0).total_memory / 1073741824
 
@@ -55,10 +55,10 @@ print(f"\033[32m显卡型号：{torch.cuda.get_device_name()}\033[0m")
 print(f"\033[32m显存大小：{total_vram_in_gb:.2f}GB\033[0m")
 
 if torch.cuda.get_device_capability()[0] >= 8:
-    print(f"\033[32m支持BF16\033[0m")
+    print("\033[32m支持BF16\033[0m")
     dtype = torch.bfloat16
 else:
-    print(f"\033[32m不支持BF16，使用FP16\033[0m")
+    print("\033[32m不支持BF16，使用FP16\033[0m")
     dtype = torch.float16
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -159,7 +159,7 @@ def convert_prompt(
             if prompt:
                 prompt = clean_string(prompt)
                 break
-        except Exception as e:
+        except Exception:
             pass
 
     return prompt
