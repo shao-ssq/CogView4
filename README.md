@@ -19,7 +19,7 @@
 
 ## Project Updates
 
-- 🔥🔥 ```2025/03/21```: We have released the [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) model! You can also train it yourself using the [training code](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control).
+- 🔥🔥 ```2025/03/24```: We have released the [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) model! You can also train it yourself using the [training code](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control).
   Additionally, we are launching [CogKit](https://github.com/THUDM/CogKit), a powerful toolkit for fine-tuning and inference of the **CogView4** and **CogVideoX** series, allowing you to fully explore our multimodal generation models.
 - ```2025/03/04```: We've adapted and open-sourced the [diffusers](https://github.com/huggingface/diffusers) version
   of **CogView-4** model, which has 6B parameters, supports native Chinese input, and Chinese text-to-image generation.
@@ -193,7 +193,6 @@ Run the `CogView4-6B-Control` model with `BF16` precision:
 ```python
 from diffusers import CogView4ControlPipeline
 import torch
-from controlnet_aux import CannyDetector
 from diffusers.utils import load_image
 
 pipe = CogView4ControlPipeline.from_pretrained("THUDM/CogView4-6B-Control", torch_dtype=torch.bfloat16).to("cuda")
@@ -206,7 +205,6 @@ pipe.vae.enable_tiling()
 prompt = "A vibrant cherry red sports car sits proudly under the gleaming sun, its polished exterior smooth and flawless, casting a mirror-like reflection. The car features a low, aerodynamic body, angular headlights that gaze forward like predatory eyes, and a set of black, high-gloss racing rims that contrast starkly with the red. A subtle hint of chrome embellishes the grille and exhaust, while the tinted windows suggest a luxurious and private interior. The scene conveys a sense of speed and elegance, the car appearing as if it's about to burst into a sprint along a coastal road, with the ocean's azure waves crashing in the background."
 
 control_image = load_image("images.jpg") # change to your images
-processor = CannyDetector()
 
 image = pipe(
     prompt=prompt,
@@ -228,6 +226,15 @@ For more inference code, please check:
 2. For using `TorchAO int8 or int4` to load `text encoder & transformer` and complete inference code annotations,
    check [here](inference/cli_demo_cogview4_int8.py).
 3. For setting up a `gradio` GUI DEMO, check [here](inference/gradio_web_demo.py).
+
+
+## Fine-tuning
+
+This repository does not contain fine-tuning code, but you can fine-tune using the following two approaches, including both LoRA and SFT:
+
+1. [CogKit](https://github.com/THUDM/CogKit), our officially maintained system-level fine-tuning framework that supports CogView4 and CogVideoX.
+2. [finetrainers](https://github.com/a-r-r-o-w/finetrainers), a low-memory solution that enables fine-tuning on a single RTX 4090.
+3. If you want to train ControlNet models directly, you can refer to the [training code](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) and train your own models.
 
 ## License
 

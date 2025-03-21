@@ -20,7 +20,7 @@
 
 ## プロジェクトの更新
 
-- 🔥🔥 ```2025/03/21```: [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) モデルをリリースしました！[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を使用して、自身でトレーニングすることも可能です。
+- 🔥🔥 ```2025/03/24```: [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) モデルをリリースしました！[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を使用して、自身でトレーニングすることも可能です。
   さらに、**CogView4** および **CogVideoX** シリーズのファインチューニングと推論を簡単に行えるツールキット [CogKit](https://github.com/THUDM/CogKit) も公開しました。私たちのマルチモーダル生成モデルを存分に活用してください！
 - ```2025/03/04```: [diffusers](https://github.com/huggingface/diffusers) バージョンの **CogView-4**
   モデルを適応し、オープンソース化しました。このモデルは6Bのパラメータを持ち、ネイティブの中国語入力と中国語のテキストから画像生成をサポートしています。オンラインで試すことができます [こちら](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)。
@@ -188,10 +188,11 @@ image.save("cogview4.png")
 `BF16` の精度で `CogView4-6B-Control` モデルを実行する：
 
 ```python
-from diffusers import CogView4Pipeline
+from diffusers import CogView4ControlPipeline
 import torch
+from diffusers.utils import load_image
 
-pipe = CogView4Pipeline.from_pretrained("THUDM/CogView4-6B", torch_dtype=torch.bfloat16).to("cuda")
+pipe = CogView4ControlPipeline.from_pretrained("THUDM/CogView4-6B-Control", torch_dtype=torch.bfloat16).to("cuda")
 
 # Open it for reduce GPU memory usage
 pipe.enable_model_cpu_offload()
@@ -199,8 +200,12 @@ pipe.vae.enable_slicing()
 pipe.vae.enable_tiling()
 
 prompt = "A vibrant cherry red sports car sits proudly under the gleaming sun, its polished exterior smooth and flawless, casting a mirror-like reflection. The car features a low, aerodynamic body, angular headlights that gaze forward like predatory eyes, and a set of black, high-gloss racing rims that contrast starkly with the red. A subtle hint of chrome embellishes the grille and exhaust, while the tinted windows suggest a luxurious and private interior. The scene conveys a sense of speed and elegance, the car appearing as if it's about to burst into a sprint along a coastal road, with the ocean's azure waves crashing in the background."
+
+control_image = load_image("images.jpg") # change to your images
+
 image = pipe(
     prompt=prompt,
+    control_image=control_image,
     guidance_scale=3.5,
     num_images_per_prompt=1,
     num_inference_steps=50,
@@ -208,10 +213,8 @@ image = pipe(
     height=1024,
 ).images[0]
 
-image.save("cogview4.png")
+image.save("cogview4_control.png")
 ```
-
-
 
 より詳しい推論コードについては、以下をご確認ください：
 
@@ -219,6 +222,13 @@ image.save("cogview4.png")
 2. `TorchAO int8 または int4` を使用して `text encoder & transformer` をロードし、完全な推論コードの注釈を確認するには、[こちら](inference/cli_demo_cogview4_int8.py) をご覧ください。
 3. `gradio` GUI デモをセットアップするには、[こちら](inference/gradio_web_demo.py) をご覧ください。
 
+## ファインチューニング（微調整）
+
+このリポジトリにはファインチューニング用のコードは含まれていませんが、LoRA および SFT を含む以下の 2 つの方法でファインチューニングが可能です：
+
+1. [CogKit](https://github.com/THUDM/CogKit)：CogView4 および CogVideoX のファインチューニングをサポートする、公式で保守されているシステムレベルのファインチューニングフレームワークです。
+2. [finetrainers](https://github.com/a-r-r-o-w/finetrainers)：低メモリ環境向けのソリューションで、RTX 4090 でのファインチューニングが可能です。
+3. ControlNet モデルを直接訓練したい場合は、[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を参考にして自前で訓練することができます。
 
 ## ライセンス
 
