@@ -8,8 +8,8 @@
 
 </div>
 <p align="center">
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>  
-<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a> 
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4"  target="_blank"> 🤗 HuggingFace Space</a>
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank">  🤖ModelScope Space</a>
 <a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ZhipuAI MaaS(Faster)</a>
 <br>
 <a href="resources/WECHAT.md" target="_blank"> 👋 WeChat Community</a>  <a href="https://arxiv.org/abs/2403.05121" target="_blank">📚 CogView3 Paper</a>
@@ -20,7 +20,9 @@
 
 ## プロジェクトの更新
 
-- 🔥🔥 ```2025/03/04```: [diffusers](https://github.com/huggingface/diffusers) バージョンの **CogView-4**
+- 🔥🔥 ```2025/03/24```: [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) モデルをリリースしました！[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を使用して、自身でトレーニングすることも可能です。
+  さらに、**CogView4** および **CogVideoX** シリーズのファインチューニングと推論を簡単に行えるツールキット [CogKit](https://github.com/THUDM/CogKit) も公開しました。私たちのマルチモーダル生成モデルを存分に活用してください！
+- ```2025/03/04```: [diffusers](https://github.com/huggingface/diffusers) バージョンの **CogView-4**
   モデルを適応し、オープンソース化しました。このモデルは6Bのパラメータを持ち、ネイティブの中国語入力と中国語のテキストから画像生成をサポートしています。オンラインで試すことができます [こちら](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)。
 - ```2024/10/13```: [diffusers](https://github.com/huggingface/diffusers) バージョンの **CogView-3Plus-3B**
   モデルを適応し、オープンソース化しました。オンラインで試すことができます [こちら](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space)。
@@ -31,7 +33,7 @@
 ## プロジェクト計画
 
 - [X] Diffusers ワークフローの適応
-- [ ] Cogシリーズのファインチューニングスイート (近日公開)
+- [X] Cogシリーズのファインチューニングスイート (近日公開)
 - [ ] ControlNetモデルとトレーニングコード
 
 ## コミュニティの取り組み
@@ -85,12 +87,12 @@
 
 DITモデルは `BF16` 精度と `batchsize=4` でテストされ、結果は以下の表に示されています：
 
-| 解像度         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit | 
-|-------------|------------------------------|-----------------------------|-----------------------------------------------------| 
-| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 | 
-| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 | 
-| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 | 
-| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 | 
+| 解像度         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit |
+|-------------|------------------------------|-----------------------------|-----------------------------------------------------|
+| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 |
+| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 |
+| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 |
+| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 |
 
 さらに、プロセスが強制終了されないようにするために、少なくとも`32GB`のRAMを持つデバイスを推奨します。
 
@@ -157,7 +159,7 @@ python prompt_optimize.py --api_key "Zhipu AI API Key" --prompt {your prompt} --
 
 ### 推論モデル
 
-`BF16` 精度でモデルを実行します：
+`BF16` の精度で `CogView4-6B` モデルを実行する：
 
 ```python
 from diffusers import CogView4Pipeline
@@ -182,37 +184,20 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
-For more inference code, please check:
 
-1. For using `BNB int4` to load `text encoder` and complete inference code annotations,
-   check [here](inference/cli_demo_cogview4.py).
-2. For using `TorchAO int8 or int4` to load `text encoder & transformer` and complete inference code annotations,
-   check [here](inference/cli_demo_cogview4_int8.py).
-3. For setting up a `gradio` GUI DEMO, check [here](inference/gradio_web_demo.py).
-## Installation
-```
-git clone https://github.com/THUDM/CogView4
-cd CogView4
-git clone https://huggingface.co/THUDM/CogView4-6B
-pip install -r inference/requirements.txt
-```
-## Quickstart
-12G VRAM
-```
-MODE=1 python inference/gradio_web_demo.py
-```
-24G VRAM 32G RAM
-```
-MODE=2 python inference/gradio_web_demo.py
-```
-24G VRAM 64G RAM
-```
-MODE=3 python inference/gradio_web_demo.py
-```
-48G VRAM 64G RAM
-```
-MODE=4 python inference/gradio_web_demo.py
-```
+より詳しい推論コードについては、以下をご確認ください：
+
+1. `BNB int4` を使用して `text encoder` をロードし、完全な推論コードの注釈を確認するには、[こちら](inference/cli_demo_cogview4.py) をご覧ください。
+2. `TorchAO int8 または int4` を使用して `text encoder & transformer` をロードし、完全な推論コードの注釈を確認するには、[こちら](inference/cli_demo_cogview4_int8.py) をご覧ください。
+3. `gradio` GUI デモをセットアップするには、[こちら](inference/gradio_web_demo.py) をご覧ください。
+
+## ファインチューニング（微調整）
+
+このリポジトリにはファインチューニング用のコードは含まれていませんが、LoRA および SFT を含む以下の 2 つの方法でファインチューニングが可能です：
+
+1. [CogKit](https://github.com/THUDM/CogKit)：CogView4 および CogVideoX のファインチューニングをサポートする、公式で保守されているシステムレベルのファインチューニングフレームワークです。
+2. [finetrainers](https://github.com/a-r-r-o-w/finetrainers)：低メモリ環境向けのソリューションで、RTX 4090 でのファインチューニングが可能です。
+3. ControlNet モデルを直接訓練したい場合は、[トレーニングコード](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) を参考にして自前で訓練することができます。
 
 ## ライセンス
 

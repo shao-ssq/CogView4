@@ -7,20 +7,24 @@
 <img src=resources/logo.svg width="50%"/>
 </div>
 
-<p align="center">  
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 HuggingFace Space</a>  
-<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 ModelScope Space</a>  
-<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ 智谱MaaS平台(更快)</a>  
-<br>  
-<a href="resources/WECHAT.md" target="_blank"> 👋 微信社区</a>  
-<a href="https://arxiv.org/abs/2403.05121" target="_blank"> 📚 CogView3 论文</a>  
-</p>  
+<p align="center">
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 CogView4 HuggingFace Space</a>
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4-Control" target="_blank"> 🤗 CogView4-Control HuggingFace Space</a>
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 CogView4 魔搭社区空间</a>
+<br>
+<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ CogView4 智谱MaaS平台</a>
+<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ CogView4-Control 智谱MaaS平台</a>
+<br>
+<a href="resources/WECHAT.md" target="_blank"> 👋 微信社区</a>
+<a href="https://arxiv.org/abs/2403.05121" target="_blank"> 📚 CogView3 论文</a>
+</p>
 
 ![showcase.png](resources/showcase.png)
 
 ## 项目更新
 
-- 🔥🔥 ```2025/03/04```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-4**
+- 🔥🔥 ```2025/03/24```: 我们推出了 [CogKit](https://github.com/THUDM/CogKit) 工具，这是一个微调**CogView4**, **CogVideoX** 系列的微调和推理框架，一个工具包，玩转我们的多模态生成模型。
+- ```2025/03/04```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-4**
   模型，该模型具有6B权重，支持原生中文输入，支持中文文字绘画。你可以前往[在线体验](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)。
 - ```2024/10/13```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-3Plus-3B**
   模型。你可以前往[在线体验](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView3-Plus-3B-Space)。
@@ -30,7 +34,7 @@
 ## 项目计划
 
 - [X] diffusers 工作流适配
-- [ ] Cog系列微调套件 (即将到来)
+- [X] Cog系列微调套件
 - [ ] ControlNet模型和训练代码
 
 ## 社区工作
@@ -85,12 +89,12 @@
 
 DIT模型均使用 `BF16` 精度,  `batchsize=4` 进行测试，测试结果如下表所示:
 
-| 分辨率         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit | 
-|-------------|------------------------------|-----------------------------|-----------------------------------------------------| 
-| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 | 
-| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 | 
-| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 | 
-| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 | 
+| 分辨率         | enable_model_cpu_offload OFF | enable_model_cpu_offload ON | enable_model_cpu_offload ON </br> Text Encoder 4bit |
+|-------------|------------------------------|-----------------------------|-----------------------------------------------------|
+| 512 * 512   | 33GB                         | 20GB                        | 13G                                                 |
+| 1280 * 720  | 35GB                         | 20GB                        | 13G                                                 |
+| 1024 * 1024 | 35GB                         | 20GB                        | 13G                                                 |
+| 1920 * 1280 | 39GB                         | 20GB                        | 14G                                                 |
 
 此外, 建议您的设备至少拥有`32GB`内存，以防止进程被杀。
 
@@ -157,7 +161,7 @@ python prompt_optimize.py --api_key "智谱AI API Key" --prompt {你的提示词
 
 ### 推理模型
 
-以 `BF16` 的精度运行模型:
+以 `BF16` 的精度运行`CogView4-6B`模型:
 
 ```python
 from diffusers import CogView4Pipeline
@@ -182,40 +186,25 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
+
 更多推理代码，可以参考：
 
-1. 用 `BNB int4` 加载 `text encoder` 代码，
-   参考[这里](inference/cli_demo_cogview4.py)。
-2. 用 `TorchAO int8 or int4` 加载 `text encoder & transformer` 代码，
-   参考[这里](inference/cli_demo_cogview4_int8.py)。
-3. 使用 `gradio` 界面示例, 参考[这里](inference/gradio_web_demo.py)。
-## 安装
-```
-git clone https://github.com/THUDM/CogView4
-cd CogView4
-git clone https://huggingface.co/THUDM/CogView4-6B
-pip install -r inference/requirements.txt
-```
-## 运行
-12G VRAM
-```
-MODE=1 python inference/gradio_web_demo.py
-```
-24G VRAM 32G RAM
-```
-MODE=2 python inference/gradio_web_demo.py
-```
-24G VRAM 64G RAM
-```
-MODE=3 python inference/gradio_web_demo.py
-```
-48G VRAM 64G RAM
-```
-MODE=4 python inference/gradio_web_demo.py
-```
+1. 用 `BNB int4` 加载 `text encoder` 代码，参考[这里](inference/cli_demo_cogview4.py)。
+2. 用 `TorchAO int8 or int4` 加载 `text encoder & transformer` 代码，参考[这里](inference/cli_demo_cogview4_int8.py)。
+3. 使用 `gradio` 界面运行`CogView4-6B-Control`, 参考[这里](inference/gradio_web_demo.py)。
+
+
+## 微调模型
+
+本仓库没有存放微调代码，你可以通过两个方案进行微调，包括 Lora 和 SFT。
+
+1. [CogKit](https://github.com/THUDM/CogKit), 由我们提出的系统微调框架，支持 CogView4，CogVideoX 微调，由我们进行维护。
+2. [finetrainers](https://github.com/a-r-r-o-w/finetrainers), 框架采用低显存的解决方案，在4090上即可进行微调。
+3. 如果你想直接训练 ControlNet模型，可以参考 [训练代码](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) 自行训练。
+
 
 ## 开源协议
 
-本仓库代码和 CogView3 模型均采用 [Apache 2.0](./LICENSE) 开源协议。
+本仓库代码和 CogView3 模型均采用 [Apache 2.0](LICENSE) 开源协议。
 
 我们欢迎和感谢你贡献代码，你可以在 [这里](resources/contribute.md) 查看贡献指南。
