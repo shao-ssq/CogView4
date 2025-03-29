@@ -8,9 +8,12 @@
 </div>
 
 <p align="center">
-<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 HuggingFace Space</a>
-<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 ModelScope Space</a>
-<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ 智谱MaaS平台(更快)</a>
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4" target="_blank"> 🤗 CogView4 HuggingFace Space</a>
+<a href="https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4-Control" target="_blank"> 🤗 CogView4-Control HuggingFace Space</a>
+<a href="https://modelscope.cn/studios/ZhipuAI/CogView4" target="_blank"> 🤖 CogView4 魔搭社区空间</a>
+<br>
+<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ CogView4 智谱MaaS平台</a>
+<a href="https://zhipuaishengchan.datasink.sensorsdata.cn/t/4z" target="_blank"> 🛠️ CogView4-Control 智谱MaaS平台</a>
 <br>
 <a href="resources/WECHAT.md" target="_blank"> 👋 微信社区</a>
 <a href="https://arxiv.org/abs/2403.05121" target="_blank"> 📚 CogView3 论文</a>
@@ -20,7 +23,7 @@
 
 ## 项目更新
 
-- 🔥🔥 ```2025/03/24```: 我们推出了 [CogView4-6B-Control](https://huggingface.co/THUDM/CogView4-6B-Control) 模型，你也可以通过[训练代码](https://github.com/huggingface/diffusers/tree/main/examples/cogview4-control) 自行训练。同时，我们推出了 [CogKit](https://github.com/THUDM/CogKit) 工具，这是一个微调**CogView4**, **CogVideoX** 系列的微调和推理框架，一个工具包，玩转我们的多模态生成模型。
+- 🔥🔥 ```2025/03/24```: 我们推出了 [CogKit](https://github.com/THUDM/CogKit) 工具，这是一个微调**CogView4**, **CogVideoX** 系列的微调和推理框架，一个工具包，玩转我们的多模态生成模型。
 - ```2025/03/04```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-4**
   模型，该模型具有6B权重，支持原生中文输入，支持中文文字绘画。你可以前往[在线体验](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)。
 - ```2024/10/13```: 我们适配和开源了 [diffusers](https://github.com/huggingface/diffusers) 版本的  **CogView-3Plus-3B**
@@ -32,7 +35,7 @@
 
 - [X] diffusers 工作流适配
 - [X] Cog系列微调套件
-- [X] ControlNet模型和训练代码
+- [ ] ControlNet模型和训练代码
 
 ## 社区工作
 
@@ -183,44 +186,6 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
-
-以 `BF16` 的精度运行`CogView4-6B-Control`模型:
-
-```python
-from diffusers import CogView4ControlPipeline
-import torch
-from diffusers.utils import load_image
-from controlnet_aux import CannyDetector
-
-pipe = CogView4ControlPipeline.from_pretrained("THUDM/CogView4-6B-Control", torch_dtype=torch.bfloat16).to("cuda")
-
-# Open it for reduce GPU memory usage
-pipe.enable_model_cpu_offload()
-pipe.vae.enable_slicing()
-pipe.vae.enable_tiling()
-
-prompt = "这张图片充满了魔幻色彩，展示了“哈利·波特”系列中的经典地标。画面中央是一块古朴的路牌，上面分别写着\"HOGGSMEADE\"和\"HOGWARTS\"，字体独特且具有古老的魔法风格。路牌的材质仿佛是经过岁月洗礼的铁质，表面略显斑驳。背景中矗立着宏伟的霍格沃茨城堡，其高耸的塔楼和石墙透露出神秘与庄严的气息。一盏复古的灯笼装在路牌旁边，微微发光，为整个场景增添了一丝温暖和梦幻的氛围。这幅图像采用了高清摄影风格，细节丰富，使人仿佛置身于魔法世界之中"
-
-control_image = load_image("resources/img.png")
-processor = CannyDetector()
-control_image = processor(
-        control_image, low_threshold=50, high_threshold=200, detect_resolution=control_image.size[0], image_resolution=control_image.size[0]
-)
-
-image = pipe(
-    prompt=prompt,
-    control_image=control_image,
-    guidance_scale=3.5,
-    num_images_per_prompt=1,
-    num_inference_steps=50,
-    width=control_image.size[0],
-    height=control_image.size[1]
-).images[0]
-
-image.save("cogview4_control.png")
-```
-
-![controlnet](resources/controlnet.png)
 
 更多推理代码，可以参考：
 

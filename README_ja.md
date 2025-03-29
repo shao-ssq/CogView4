@@ -34,7 +34,7 @@
 
 - [X] Diffusers ワークフローの適応
 - [X] Cogシリーズのファインチューニングスイート (近日公開)
-- [X] ControlNetモデルとトレーニングコード
+- [ ] ControlNetモデルとトレーニングコード
 
 ## コミュニティの取り組み
 
@@ -184,44 +184,6 @@ image = pipe(
 
 image.save("cogview4.png")
 ```
-
-`BF16` の精度で `CogView4-6B-Control` モデルを実行する：
-
-```python
-from diffusers import CogView4ControlPipeline
-import torch
-from diffusers.utils import load_image
-from controlnet_aux import CannyDetector
-
-pipe = CogView4ControlPipeline.from_pretrained("THUDM/CogView4-6B-Control", torch_dtype=torch.bfloat16).to("cuda")
-
-# Open it for reduce GPU memory usage
-pipe.enable_model_cpu_offload()
-pipe.vae.enable_slicing()
-pipe.vae.enable_tiling()
-
-prompt = "这张图片充满了魔幻色彩，展示了“哈利·波特”系列中的经典地标。画面中央是一块古朴的路牌，上面分别写着\"HOGGSMEADE\"和\"HOGWARTS\"，字体独特且具有古老的魔法风格。路牌的材质仿佛是经过岁月洗礼的铁质，表面略显斑驳。背景中矗立着宏伟的霍格沃茨城堡，其高耸的塔楼和石墙透露出神秘与庄严的气息。一盏复古的灯笼装在路牌旁边，微微发光，为整个场景增添了一丝温暖和梦幻的氛围。这幅图像采用了高清摄影风格，细节丰富，使人仿佛置身于魔法世界之中"
-
-control_image = load_image("resources/img.png")
-processor = CannyDetector()
-control_image = processor(
-        control_image, low_threshold=50, high_threshold=200, detect_resolution=control_image.size[0], image_resolution=control_image.size[0]
-)
-
-image = pipe(
-    prompt=prompt,
-    control_image=control_image,
-    guidance_scale=3.5,
-    num_images_per_prompt=1,
-    num_inference_steps=50,
-    width=control_image.size[0],
-    height=control_image.size[1]
-).images[0]
-
-image.save("cogview4_control.png")
-```
-
-![controlnet](resources/controlnet.png)
 
 より詳しい推論コードについては、以下をご確認ください：
 
