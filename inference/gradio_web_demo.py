@@ -1,51 +1,23 @@
-"""
-This script demonstrates how to generate an image using the CogView4-6B model within the Hugging Face Space interface. Simply interact with the Gradio interface hosted on Hugging Face CogView4 Demo at [CogView4-6B Hugging Face Space](https://huggingface.co/spaces/THUDM-HF-SPACE/CogView4)
-
-Running the Script:
-To run the script, use the following command with appropriate arguments:
-
-```bash
-OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4" python gradio_web_demo.py
-```
-
-We use [glm-4-plus](https://bigmodel.cn/dev/howuse/glm-4) as the large model for prompt refinement. You can also choose other large models, such as GPT-4o, for refinement.”
-
-For Different GPU Memory Usage:
-
-12G VRAM
-```
-MODE=1 OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4" python gradio_web_demo.py
-```
-24G VRAM 32G RAM
-```
-MODE=2 OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4" python gradio_web_demo.py
-```
-24G VRAM 64G RAM
-```
-MODE=3 OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4" python gradio_web_demo.py
-```
-40G VRAM 64G RAM and Larger
-```
-OPENAI_API_KEY="your ZhipuAI API keys" OPENAI_BASE_URL="https://open.bigmodel.cn/api/paas/v4" python gradio_web_demo.py
-```
-"""
-
-import gc
 import os
-import random
 import re
 import threading
 import time
 from datetime import datetime, timedelta
 
 import gradio as gr
-import torch
+import random
 from diffusers import CogView4Pipeline
-from diffusers.models import CogView4Transformer2DModel
+from diffusers.models import AutoencoderKL, CogView4Transformer2DModel
+import torch
 from openai import OpenAI
-from torchao.quantization import int8_weight_only, quantize_
-from transformers import GlmModel
 
+from transformers import GlmModel
+from torchao.quantization import quantize_, int8_weight_only
+import gc
+
+os.environ["OPENAI_BASE_URL"] = "https://api.openai-next.com/v1"
+os.environ["OPENAI_API_KEY"] = "sk-Jbh9xA3r9y3SCkRb2736CbEa8c3341D785A421893c3487E9"
+mode = os.environ.get("MODE", "4")
 
 total_vram_in_gb = torch.cuda.get_device_properties(0).total_memory / 1073741824
 
@@ -55,19 +27,18 @@ print(f"\033[32m显卡型号：{torch.cuda.get_device_name()}\033[0m")
 print(f"\033[32m显存大小：{total_vram_in_gb:.2f}GB\033[0m")
 
 if torch.cuda.get_device_capability()[0] >= 8:
-    print("\033[32m支持BF16\033[0m")
+    print(f"\033[32m支持BF16\033[0m")
     dtype = torch.bfloat16
 else:
-    print("\033[32m不支持BF16，使用FP16\033[0m")
+    print(f"\033[32m不支持BF16，使用FP16\033[0m")
     dtype = torch.float16
-
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model_path = "THUDM/CogView4-6B"
-mode = os.environ.get("MODE", "0")
+
+model_path = "D:\\modelscope_cache\\models\\CogView4-6B"
 
 text_encoder = None
 transformer = None
-if mode in ["1", "2"]:
+if mode in ["1", "2", "3", "4"]:
     text_encoder = GlmModel.from_pretrained(model_path, subfolder="text_encoder", torch_dtype=dtype)
     transformer = CogView4Transformer2DModel.from_pretrained(model_path, subfolder="transformer", torch_dtype=dtype)
     quantize_(text_encoder, int8_weight_only())
@@ -80,7 +51,7 @@ pipe = CogView4Pipeline.from_pretrained(
     torch_dtype=dtype,
 ).to(device)
 
-if mode in ["1", "3"]:
+if mode in ["1", "3", "2", "4"]:
     pipe.enable_model_cpu_offload()
 
 pipe.vae.enable_slicing()
@@ -95,9 +66,9 @@ def clean_string(s):
 
 
 def convert_prompt(
-    prompt: str,
-    key: str,
-    retry_times: int = 5,
+        prompt: str,
+        key: str,
+        retry_times: int = 5,
 ) -> str:
     os.environ["OPENAI_API_KEY"] = key
     if not key:
@@ -159,7 +130,7 @@ def convert_prompt(
             if prompt:
                 prompt = clean_string(prompt)
                 break
-        except Exception:
+        except Exception as e:
             pass
 
     return prompt
@@ -185,15 +156,15 @@ threading.Thread(target=delete_old_files, daemon=True).start()
 
 
 def infer(
-    prompt,
-    seed,
-    randomize_seed,
-    width,
-    height,
-    guidance_scale,
-    num_inference_steps,
-    num_images,
-    progress=gr.Progress(track_tqdm=True),
+        prompt,
+        seed,
+        randomize_seed,
+        width,
+        height,
+        guidance_scale,
+        num_inference_steps,
+        num_images,
+        progress=gr.Progress(track_tqdm=True),
 ):
     gc.collect()
     if torch.cuda.is_available():
@@ -226,26 +197,7 @@ def update_max_width(height):
     return gr.update(maximum=max_width)
 
 
-examples = [
-    "这是一幅充满皮克斯风格的动画渲染图像，展现了一只拟人化的粘土风格小蛇。这条快乐的小蛇身着魔术师装扮，占据了画面下方三分之一的位置，显得俏皮而生动。它的头上戴着一顶黑色羊毛材质的复古礼帽，身上穿着一件设计独特的红色棉袄，白色的毛袖增添了一抹温暖的对比。小蛇的鳞片上精心绘制了金色梅花花纹，显得既华丽又不失可爱。它的腹部和脸庞呈现洁白，与红色的身体形成鲜明对比。 这条蜿蜒的小蛇拥有可爱的塑胶手办质感，仿佛随时会从画面中跃然而出。背景是一片鲜艳的红色，地面上散布着宝箱、金蛋和红色灯笼等装饰物，营造出浓厚的节日气氛。画面的上半部分用金色连体字书写着 “Happy New Year”，庆祝新年的到来，同时也暗示了蛇年的到来，为整幅画面增添了一份节日的喜悦和祥瑞。",
-    "在这幅如梦似幻的画作中，一辆由云朵构成的毛绒汽车轻盈地漂浮在蔚蓝的高空之中。这辆汽车设计独特，车身完全由洁白、蓬松的云朵编织而成，每一处都散发着柔软而毛茸茸的质感。从车顶到轮胎，再到它的圆润车灯，无一不是由细腻的云丝构成，仿佛随时都可能随风轻轻摆动。车窗也是由透明的云物质构成，同样覆盖着一层细软的绒毛，让人不禁想要触摸。 这辆神奇的云朵汽车仿佛是魔法世界中的交通工具，它悬浮在夕阳映照的绚丽天空之中，周围是五彩斑斓的晚霞和悠然飘浮的云彩。夕阳的余晖洒在云朵车上，为其柔软的轮廓镀上了一层金色的光辉，使得整个场景既温馨又神秘，引人入胜。",
-    "A vintage red convertible with gleaming chrome finishes sits attractively under the golden hues of a setting sun, parked on a deserted cobblestone street in a charming old town. The car's polished body reflects the surrounding quaint buildings and the few early evening stars beginning to twinkle in the gentle gradient of the twilight sky. A light breeze teases the few fallen leaves near the car's pristine white-walled tires, which rest casually by the sidewalk, hinting at the leisurely pace of life in this serene setting.",
-]
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
-    gr.Markdown("""
-            <div>
-                <h2 style="font-size: 30px;text-align: center;">CogView4-6B</h2>
-            </div>
-            <div style="text-align: center;">
-                <a href="https://github.com/THUDM/CogView4">🌐 Github</a> |
-                <a href="https://arxiv.org/abs/2403.05121">📜 arXiv </a>
-            </div>
-            <div style="text-align: center; font-weight: bold; color: red;">
-                ⚠️ 该演示仅供学术研究和体验使用。
-            </div>
-            </div>
-        """)
-
     with gr.Column():
         with gr.Row():
             with gr.Column():
@@ -273,6 +225,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                         placeholder="Enter your key",
                         type="password",
                         max_lines=1,
+                        value="sk-Jbh9xA3r9y3SCkRb2736CbEa8c3341D785A421893c3487E9",
                     )
                 with gr.Row():
                     seed = gr.Slider(
@@ -316,25 +269,10 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             with gr.Column():
                 result = gr.Gallery(label="Results", show_label=True)
 
-        MAX_PIXELS = 2**21
+        MAX_PIXELS = 2 ** 21
         enhance.click(convert_prompt, inputs=[prompt, key], outputs=[prompt])
         width.change(update_max_height, inputs=[width], outputs=[height])
         height.change(update_max_width, inputs=[height], outputs=[width])
-
-        with gr.Column():
-            gr.Markdown("### Examples (Enhance prompt finish)")
-            for i, ex in enumerate(examples):
-                with gr.Row():
-                    ex_btn = gr.Button(value=ex, variant="secondary", elem_id=f"ex_btn_{i}", scale=3)
-                    ex_img = gr.Image(
-                        value=f"img/img_{i + 1}.png",
-                        label="Effect",
-                        interactive=False,
-                        height=130,
-                        width=130,
-                        scale=1,
-                    )
-                    ex_btn.click(fn=lambda ex=ex: ex, inputs=[], outputs=prompt)
 
     gr.on(
         triggers=[run_button.click, prompt.submit],
